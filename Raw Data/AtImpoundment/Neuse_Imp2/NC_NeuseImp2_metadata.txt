@@ -1,2 +1,0 @@
-Neuse River monitoring site associated with the Milburnie Dam removal project. Imp 2 existed prior to dam removal, in impounded reach immediately upstream of dam. Onset DO and water level loggers were located on a buoy at 2 separate depths to capture stratification. During drawdown prior to dam removal, buoy was no longer present so level logger was located at dam to capture water level as it was brought down. Logger was removed prior to infrastructure work.
-Site maintained by Doyle lab, Duke University

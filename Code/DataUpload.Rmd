@@ -1,0 +1,168 @@
+---
+title: "DataUpload"
+author: "Kathleen Mason"
+date: "10/4/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r Important Coding Notes to Remember}
+#Add new chunk by command + option + I
+```
+
+```{r Setup}
+library(tidyverse)
+getwd()
+
+
+
+```
+
+
+```{r Loading Upstream Data}
+Up1<-read_csv("./Raw/UpStream/Neuse_Up1/NC_NeuseUp1_sensorData.csv")
+colnames(Up1)
+
+Up2<-read_csv("./Raw/UpStream/Neuse_Up2/NC_NeuseUp2_sensorData.csv")
+colnames(Up2)
+```
+
+```{r Loading Impoundment Data}
+Imp1<-read_csv("./Raw/AtImpoundment/Imp1/NC_NeuseImp1_sensorData.csv")
+
+Imp2<-read.csv("./Raw/AtImpoundment/Neuse_Imp2/NC_NeuseImp2_sensorData.csv")
+#Note the Impoundment 2 dataset has columns for flagtype and flagcomment but nothing exists- blank- within these columns. In the other datasets, there are flagtypes and comments written in.
+```
+
+```{r Loading Downstream Data}
+Down1<-read_csv("./Raw/DownStream/Neuse_Down1/NC_NeuseDown1_sensorData.csv")
+#Down 1 dataset has NA's in flagtype and flagcomment. Note these to be fixed later
+
+Down2A<-read_csv("./Raw/DownStream/NeuseDown2a/NC_NeuseDown2A_sensorData.csv")
+#More NA's present in same two columns
+
+Down2B<-read_csv("./Raw/DownStream/Neuse_Down2B/NC_NeuseDown2B_sensorData.csv")
+#More NA's
+```
+
+```{r Checking for NA in Data}
+#No NA's exist in the value fields of any of the datasets
+summary(Up1$value)
+
+```
+
+```{r Date Planning}
+#I think I want to keep the time stamps so maybe I need to put these in their own separate column
+#If I first just format the dates as dates without moving the timestamps, it deletes the timestamps and then multiple data points will just be listed for the one day.
+```
+
+```{r Separating Time and Date}
+#Up1
+#Separating into own columns
+TimeUp1 <- format(as.POSIXct(strptime(Up1$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%H:%M:%S")
+DateUp2 <- format(as.POSIXct(strptime(Up1$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%Y-%m-%d")
+#Re-adding new columns
+Up1$Time<- TimeUp1
+Up1$Date<- DateUp2
+#Formatting date as date
+Up1$Date<-as.Date(Up1$Date, format = "%Y-%m-%d")
+
+#check
+class(Up1$Date) #date is now a date
+class(Up1$Time) #this is still a character for now
+
+#Up2
+TimeUp2 <- format(as.POSIXct(strptime(Up2$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%H:%M:%S")
+DateUp2 <- format(as.POSIXct(strptime(Up2$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%Y-%m-%d")
+#Re-adding new columns
+Up2$Time<- TimeUp2
+Up2$Date<- DateUp2
+#Formatting date as date
+Up2$Date<-as.Date(Up2$Date, format = "%Y-%m-%d")
+#check
+class(Up2$Date) #date is now a date
+class(Up2$Time) #this is still a character for now
+
+
+#Imp1
+TimeImp1 <- format(as.POSIXct(strptime(Imp1$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%H:%M:%S")
+DateImp1 <- format(as.POSIXct(strptime(Imp1$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%Y-%m-%d")
+#Re-adding new columns
+Imp1$Time<- TimeImp1
+Imp1$Date<- DateImp1
+#Formatting date as date
+Imp1$Date<-as.Date(Imp1$Date, format = "%Y-%m-%d")
+#check
+class(Imp1$Date) #date is now a date
+class(Imp1$Time) #this is still a character for now
+
+
+#Imp2
+TimeImp2 <- format(as.POSIXct(strptime(Imp2$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%H:%M:%S")
+DateImp2 <- format(as.POSIXct(strptime(Imp2$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%Y-%m-%d")
+#Re-adding new columns
+Imp2$Time<- TimeImp2
+Imp2$Date<- DateImp2
+#Formatting date as date
+Imp2$Date<-as.Date(Imp2$Date, format = "%Y-%m-%d")
+#check
+class(Imp2$Date) #date is now a date
+class(Imp2$Time) #this is still a character for now
+
+
+#Down1
+TimeDown1 <- format(as.POSIXct(strptime(Down1$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%H:%M:%S")
+DateDown1 <- format(as.POSIXct(strptime(Down1$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%Y-%m-%d")
+#Re-adding new columns
+Down1$Time<- TimeDown1
+Down1$Date<- DateDown1
+#Formatting date as date
+Down1$Date<-as.Date(Down1$Date, format = "%Y-%m-%d")
+#check
+class(Down1$Date) #date is now a date
+class(Down1$Time) #this is still a character for now
+
+
+#Down2A
+TimeDown2A <- format(as.POSIXct(strptime(Down2A$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%H:%M:%S")
+DateDown2A <- format(as.POSIXct(strptime(Down2A$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%Y-%m-%d")
+#Re-adding new columns
+Down2A$Time<- TimeDown2A
+Down2A$Date<- DateDown2A
+#Formatting date as date
+Down2A$Date<-as.Date(Down2A$Date, format = "%Y-%m-%d")
+#check
+class(Down2A$Date) #date is now a date
+class(Down2A$Time) #this is still a character for now
+
+
+#Down2B
+TimeDown2B <- format(as.POSIXct(strptime(Down2B$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%H:%M:%S")
+DateDown2B <- format(as.POSIXct(strptime(Down2B$DateTime_UTC,"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%Y-%m-%d")
+#Re-adding new columns
+Down2B$Time<- TimeDown2B
+Down2B$Date<- DateDown2B
+#Formatting date as date
+Down2B$Date<-as.Date(Down2B$Date, format = "%Y-%m-%d")
+#check
+class(Down2B$Date) #date is now a date
+class(Down2B$Time) #this is still a character for now
+```
+
+
+
+
+
+```{r Next Steps...}
+
+#Take subset of columns using below code and then save datasets as new processed datasets
+#weather <- subset(weather, select = c(1,2,4,5))
+#weather is name of dataset in this example
+```
+

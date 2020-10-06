@@ -155,14 +155,35 @@ class(Down2B$Date) #date is now a date
 class(Down2B$Time) #this is still a character for now
 ```
 
-
-
-
-
-```{r Next Steps...}
-
+```{r Subset of Columns}
 #Take subset of columns using below code and then save datasets as new processed datasets
 #weather <- subset(weather, select = c(1,2,4,5))
 #weather is name of dataset in this example
+
+Up1_processed <- subset(Up1, select = c(3,4,5,6,7,8,9))
+Up2_processed <-subset(Up2, select = c(3,4,5,6,7,8,9))
+
+Imp1_processed <-subset(Imp1, select = c(3,4,5,6,7,8,9))
+Imp2_processed <-subset(Imp2, select = c(3,4,5,6,7,8,9))
+
+Down1_processed <-subset(Down1, select = c(3,4,5,6,7,8,9))
+Down2A_processed <- subset(Down2A, select = c(3,4,5,6,7,8,9))
+Down2B_processed <- subset(Down2B, select = c(3,4,5,6,7,8,9))
+
+```
+
+
+```{r Saving New Processed Datasets}
+write.csv(Up1_processed, file = "./Processed/Up1_processed.csv", row.names=FALSE)
+write.csv(Up2_processed, file = "./Processed/Up2_processed.csv", row.names=FALSE)
+write.csv(Imp1_processed, file = "./Processed/Imp1_processed.csv", row.names=FALSE)
+write.csv(Imp2_processed, file = "./Processed/Imp2_processed.csv", row.names=FALSE)
+write.csv(Down1_processed, file = "./Processed/Down1_processed.csv", row.names=FALSE)
+write.csv(Down2A_processed, file = "./Processed/Down2A_processed.csv", row.names=FALSE)
+write.csv(Down2B_processed, file = "./Processed/Down2B_processed.csv", row.names=FALSE)
+```
+
+```{r Next steps}
+#In a new coding file...upload processed files, separate the sampling parameters (Temp, DO, pres) and subsequent values into different columns so i can graph just DO
 ```
 

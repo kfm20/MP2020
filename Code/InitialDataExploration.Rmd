@@ -1,0 +1,35 @@
+---
+title: "InitialDataExploration"
+author: "Kathleen Mason"
+date: "10/6/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Setup and Upload}
+library(tidyverse)
+getwd()
+
+
+Up1_processed<-read_csv("./Processed/Up1_processed.csv")
+Up2_processed<-read_csv("./Processed/Up2_processed.csv")
+Imp1_processed<-read_csv("./Processed/Imp1_processed.csv")
+Imp2_processed<-read_csv("./Processed/Imp2_processed.csv")
+Down1_processed<-read_csv("./Processed/Down1_processed.csv")
+Down2A_processed<-read_csv("./Processed/Down2A_processed.csv")
+Down2B_processed<-read_csv("./Processed/Down2B_processed.csv")
+```
+
+```{r Next Steps}
+
+#data has been spread and subset of columns has been taken and saved in processed files
+
+
+
+```
+

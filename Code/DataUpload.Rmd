@@ -155,20 +155,31 @@ class(Down2B$Date) #date is now a date
 class(Down2B$Time) #this is still a character for now
 ```
 
+```{r Spread Data}
+Up1_spread<- Up1 %>% spread(variable, value)
+Up2_spread<- Up2 %>% spread(variable, value)
+Imp1_spread<- Imp1 %>% spread(variable, value)
+Imp2_spread<- Imp2 %>% spread(variable, value)
+Down1_spread<- Down1 %>% spread(variable, value)
+Down2A_spread<- Down2A %>% spread(variable, value)
+Down2B_spread<- Down2B %>% spread(variable, value)
+```
+
+
 ```{r Subset of Columns}
 #Take subset of columns using below code and then save datasets as new processed datasets
 #weather <- subset(weather, select = c(1,2,4,5))
 #weather is name of dataset in this example
 
-Up1_processed <- subset(Up1, select = c(3,4,5,6,7,8,9))
-Up2_processed <-subset(Up2, select = c(3,4,5,6,7,8,9))
+Up1_processed <- subset(Up1_spread, select = c(3,6,7,10,11,12))
+Up2_processed <-subset(Up2_spread, select = c(3,6,7,10,11,12))
 
-Imp1_processed <-subset(Imp1, select = c(3,4,5,6,7,8,9))
-Imp2_processed <-subset(Imp2, select = c(3,4,5,6,7,8,9))
+Imp1_processed <-subset(Imp1_spread, select = c(3,6,7,8,9,10,11,12))
+Imp2_processed <-subset(Imp2_spread, select = c(3,6,7,8,9,10,11,12,13,14))
 
-Down1_processed <-subset(Down1, select = c(3,4,5,6,7,8,9))
-Down2A_processed <- subset(Down2A, select = c(3,4,5,6,7,8,9))
-Down2B_processed <- subset(Down2B, select = c(3,4,5,6,7,8,9))
+Down1_processed <-subset(Down1_spread, select = c(3,6,7,8,9,10,11,12,13))
+Down2A_processed <- subset(Down2A_spread, select = c(3,6,7,8,9,10))
+Down2B_processed <- subset(Down2B_spread, select = c(3,6,7,8,9,10))
 
 ```
 

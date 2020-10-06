@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r Setup and Upload}
 library(tidyverse)
+library(ggridges)
 getwd()
 
 
@@ -23,13 +24,76 @@ Imp2_processed<-read_csv("./Processed/Imp2_processed.csv")
 Down1_processed<-read_csv("./Processed/Down1_processed.csv")
 Down2A_processed<-read_csv("./Processed/Down2A_processed.csv")
 Down2B_processed<-read_csv("./Processed/Down2B_processed.csv")
+
+class(Up1_processed$Date)
 ```
 
-```{r Next Steps}
+```{r Initial Graphs}
 
-#data has been spread and subset of columns has been taken and saved in processed files
+#Rename the DO
+colnames(Up1_processed)[4] <- "Dissolved Oxygen"
+summary(Up1_processed$`Dissolved Oxygen`)
+colnames(Imp1_processed)[5] <- "Dissolved Oxygen"
+summary(Imp1_processed$`Dissolved Oxygen`)
+
+colnames(Up2_processed)[4]<-"Dissolved Oxygen"
+colnames(Imp2_processed)[6]<-"Dissolved Oxygen"
+
+colnames(Down1_processed)[6]<-"Dissolved Oxygen"
+colnames(Down2A_processed)[4]<-"Dissolved Oxygen"
+colnames(Down2B_processed)[4]<-"Dissolved Oxygen"
+
+
+#Average DO per day since sampled multiple times a day
+Up1AvgDO<-  Up1_processed %>%
+  group_by(Date) %>%
+  summarise(AvgDO = mean(`Dissolved Oxygen`))
+Imp1AvgDO<-  Imp1_processed %>%
+  group_by(Date) %>%
+  summarise(AvgDO = mean(`Dissolved Oxygen`))
+Up2AvgDO<-  Up2_processed %>%
+  group_by(Date) %>%
+  summarise(AvgDO = mean(`Dissolved Oxygen`))
+Imp2AvgDO<-  Imp2_processed %>%
+  group_by(Date) %>%
+  summarise(AvgDO = mean(`Dissolved Oxygen`))
+Down1AvgDO<-  Down1_processed %>%
+  group_by(Date) %>%
+  summarise(AvgDO = mean(`Dissolved Oxygen`))
+Down2AAvgDO<-  Down2A_processed %>%
+  group_by(Date) %>%
+  summarise(AvgDO = mean(`Dissolved Oxygen`))
+Down2BAvgDO<-  Down2B_processed %>%
+  group_by(Date) %>%
+  summarise(AvgDO = mean(`Dissolved Oxygen`))
 
 
 
+#Graph
+
+ggplot(Up1AvgDO, aes(x = Date, y = AvgDO)) +
+geom_point()  + ylim(10, 15) #+ xlim("2013-12-14", "2018-11-07")
+
+ggplot(Imp1AvgDO, aes(x = Date, y = AvgDO)) +
+geom_point()  
+
+ggplot(Up2AvgDO, aes(x = Date, y = AvgDO)) +
+geom_point()  
+
+ggplot(Imp2AvgDO, aes(x = Date, y = AvgDO)) +
+geom_point()
+summary(Up2_processed$`Dissolved Oxygen`) #No DO data actually exists for Imp2
+
+ggplot(Down1AvgDO, aes(x = Date, y = AvgDO)) +
+geom_point()+ ylim(10, 15)
+summary(Down1AvgDO) #655 missing values
+
+ggplot(Down2AAvgDO, aes(x = Date, y = AvgDO)) +
+geom_point()
+
+ggplot(Down2BAvgDO, aes(x = Date, y = AvgDO)) +
+geom_point()+ ylim(0,15)
+summary(Down2BAvgDO)
 ```
+
 

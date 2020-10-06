@@ -72,27 +72,34 @@ Down2BAvgDO<-  Down2B_processed %>%
 #Graph
 
 ggplot(Up1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()  + ylim(10, 15) #+ xlim("2013-12-14", "2018-11-07")
+geom_point()  + ylim(10, 15) +ylab("Avg Daily DO (mgL)")
 
 ggplot(Imp1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()  
+geom_point()  +ylab("Avg Daily DO (mgL)")
 
 ggplot(Up2AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()  
+geom_point() +ylab("Avg Daily DO (mgL)") 
 
 ggplot(Imp2AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()
+geom_point()+ylab("Avg Daily DO (mgL)")
 summary(Up2_processed$`Dissolved Oxygen`) #No DO data actually exists for Imp2
 
 ggplot(Down1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()+ ylim(10, 15)
+geom_point()+ ylim(10, 15)+ylab("Avg Daily DO (mgL)")
 summary(Down1AvgDO) #655 missing values
 
 ggplot(Down2AAvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()
+geom_point()+ylab("Avg Daily DO (mgL)")
 
 ggplot(Down2BAvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()+ ylim(0,15)
+geom_point()+ ylim(0,15)+ylab("Avg Daily DO (mgL)")
+
+#Trying to add in line where dam was removed
+#+abline(v=as.Date("2017-09-21","%Y-%m-%d"))
+#+ abline(v=as.Date("2017-09-21"))
+#+geom_text(y = as.Date("2020-01-01"), y = 120, label = "unhealthy (sensitive groups)", hjust = 1, fontface
+#these are not working
+
 summary(Down2BAvgDO)
 ```
 

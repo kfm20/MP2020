@@ -1,0 +1,28 @@
+---
+title: "DOThresholds"
+author: "Kathleen Mason"
+date: "10/22/2020"
+output: html_document
+---
+
+```{r Setup}
+library(tidyverse)
+library(ggridges)
+
+
+getwd()
+setwd("~/Documents/DUKE/MP/Data Analysis/MP2020")
+
+
+Up1AvgDO<-read_csv("./Processed/Up1AvgDO_processed.csv")
+Up2AvgDO<-read_csv("./Processed/Up2AvgDO_processed.csv")
+Imp1AvgDO<-read_csv("./Processed/Imp1AvgDO_processed.csv")
+Imp2AvgDO<-read_csv("./Processed/Imp2AvgDO_processed.csv")
+Down1AvgDO<-read_csv("./Processed/Down1AvgDO_processed.csv")
+Down2AAvgDO<-read_csv("./Processed/Down2AAvgDO_processed.csv")
+Down2BAvgDO<-read_csv("./Processed/Down2BAvgDO_processed.csv")
+
+class(Up1AvgDO_processed$Date)
+
+```
+

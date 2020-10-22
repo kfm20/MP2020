@@ -71,8 +71,20 @@ Down2AAvgDO<-  Down2A_processed %>%
 Down2BAvgDO<-  Down2B_processed %>%
   group_by(Date) %>%
   summarise(AvgDO = mean(`Dissolved Oxygen`))
+```
 
 
+```{r}
+write.csv(Up1AvgDO, file = "./Processed/Up1AvgDO_processed.csv", row.names=FALSE)
+write.csv(Up2AvgDO, file = "./Processed/Up2AvgDO_processed.csv", row.names=FALSE)
+write.csv(Imp1AvgDO, file = "./Processed/Imp1AvgDO_processed.csv", row.names=FALSE)
+write.csv(Imp2AvgDO, file = "./Processed/Imp2AvgDO_processed.csv", row.names=FALSE)
+write.csv(Down1AvgDO, file = "./Processed/Down1AvgDO_processed.csv", row.names=FALSE)
+write.csv(Down2AAvgDO, file = "./Processed/Down2AAvgDO_processed.csv", row.names=FALSE)
+write.csv(Down2BAvgDO, file = "./Processed/Down2BAvgDO_processed.csv", row.names=FALSE)
+```
+
+```{r}
 
 #Graph
 removal_vline <- as.Date(c("2017-09-21"))  
@@ -170,6 +182,8 @@ Imp1plot
 #these are not working
 
 summary(Down2BAvgDO)
+```
+
 ```
 
 

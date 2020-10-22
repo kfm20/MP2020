@@ -79,7 +79,7 @@ removal_vline <- as.Date(c("2017-09-21"))
 removal_vline <- which(Up1AvgDO$Date %in% removal_vline)
 
 Up1plot <-ggplot(Up1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point(size=.75, color="royalblue4")  + ylim(0, 15) +ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+geom_point(size=.75, color="royalblue4")  + ylim(0, 15) +ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
   labs(title = "Upstream 1")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
@@ -91,7 +91,7 @@ Up1plot
 
 
 Imp1plot<- ggplot(Imp1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point(size=.75, color="royalblue4")  +ylim(0, 15) +ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+geom_point(size=.75, color="royalblue4")  +ylim(0, 15) +ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
   labs(title = "Impoundment 1")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
@@ -102,7 +102,7 @@ geom_point(size=.75, color="royalblue4")  +ylim(0, 15) +ylab("Avg Daily DO (mgL)
 Imp1plot
 
 Up2plot<- ggplot(Up2AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point(size=.75, color="royalblue4") +ylim(0, 15) +ylab("Avg Daily DO (mgL)") + xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+geom_point(size=.75, color="royalblue4") +ylim(0, 15) +ylab("Avg Daily DO (mg/L)") + xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
    labs(title = "Upstream 2")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
@@ -117,7 +117,7 @@ geom_point(size=.75, color="royalblue4")+ylab("Avg Daily DO (mgL)")
 summary(Up2_processed$`Dissolved Oxygen`) #No DO data actually exists for Imp2
 
 Down1plot<- ggplot(Down1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point(size=.75, color="royalblue4")+ ylim(0, 15)+ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+ scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+geom_point(size=.75, color="royalblue4")+ ylim(0, 15)+ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+ scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
    labs(title = "Downstream 1")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
@@ -129,7 +129,7 @@ summary(Down1AvgDO) #655 missing values
 Down1plot
 
 Down2Aplot<- ggplot(Down2AAvgDO, aes(x = Date, y = AvgDO)) +
-geom_point(size=.75, color="royalblue4")+ylim(0, 15) +ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+geom_point(size=.75, color="royalblue4")+ylim(0, 15) +ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
    labs(title = "Downstream 2A")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
@@ -140,7 +140,7 @@ geom_point(size=.75, color="royalblue4")+ylim(0, 15) +ylab("Avg Daily DO (mgL)")
 Down2Aplot
 
 Down2Bplot<- ggplot(Down2BAvgDO, aes(x = Date, y = AvgDO)) +
-geom_point(size=.75, color="royalblue4")+ ylim(0,15)+ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+
+geom_point(size=.75, color="royalblue4")+ ylim(0,15)+ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   labs(title = "Downstream 2B")+
   theme(panel.background = element_rect(fill = "grey97"),

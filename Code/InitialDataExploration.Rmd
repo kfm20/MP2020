@@ -75,22 +75,29 @@ Down2BAvgDO<-  Down2B_processed %>%
 
 
 #Graph
+removal_vline <- as.Date(c("2017-09-21"))  
+removal_vline <- which(Up1AvgDO$Date %in% removal_vline)
 
 Up1plot <-ggplot(Up1AvgDO, aes(x = Date, y = AvgDO)) +
 geom_point(size=.75, color="royalblue4")  + ylim(0, 15) +ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
   labs(title = "Upstream 1")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray80", size = 0.25))
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
+  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
+             col = "red", lwd = .5)
 
 Up1plot
+
 
 Imp1plot<- ggplot(Imp1AvgDO, aes(x = Date, y = AvgDO)) +
 geom_point(size=.75, color="royalblue4")  +ylim(0, 15) +ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
   labs(title = "Impoundment 1")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray80", size = 0.25))
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
+  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
+             col = "red", lwd = .5)
 
 Imp1plot
 
@@ -99,7 +106,9 @@ geom_point(size=.75, color="royalblue4") +ylim(0, 15) +ylab("Avg Daily DO (mgL)"
    labs(title = "Upstream 2")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray80", size = 0.25))
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
+  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
+             col = "red", lwd = .5)
 
 Up2plot
 
@@ -112,7 +121,9 @@ geom_point(size=.75, color="royalblue4")+ ylim(0, 15)+ylab("Avg Daily DO (mgL)")
    labs(title = "Downstream 1")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray80", size = 0.25))
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
+  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
+             col = "red", lwd = .5)
 summary(Down1AvgDO) #655 missing values
 
 Down1plot
@@ -122,7 +133,9 @@ geom_point(size=.75, color="royalblue4")+ylim(0, 15) +ylab("Avg Daily DO (mgL)")
    labs(title = "Downstream 2A")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray80", size = 0.25))
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
+  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
+             col = "red", lwd = .5)
 
 Down2Aplot
 
@@ -132,8 +145,12 @@ geom_point(size=.75, color="royalblue4")+ ylim(0,15)+ylab("Avg Daily DO (mgL)")+
   labs(title = "Downstream 2B")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray80", size = 0.25))
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
+  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
+             col = "red", lwd = .5)
 Down2Bplot
+
+
 
 AllUp<- Up1plot+Up2plot
 AllUp

@@ -14,6 +14,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r Setup and Upload}
 library(tidyverse)
 library(ggridges)
+
+install.packages('patchwork')
+library(patchwork)
+
+
 getwd()
 
 
@@ -71,28 +76,75 @@ Down2BAvgDO<-  Down2B_processed %>%
 
 #Graph
 
-ggplot(Up1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()  + ylim(10, 15) +ylab("Avg Daily DO (mgL)")
+Up1plot <-ggplot(Up1AvgDO, aes(x = Date, y = AvgDO)) +
+geom_point(size=.75, color="royalblue4")  + ylim(0, 15) +ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+  labs(title = "Upstream 1")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))
 
-ggplot(Imp1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()  +ylab("Avg Daily DO (mgL)")
+Up1plot
 
-ggplot(Up2AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point() +ylab("Avg Daily DO (mgL)") 
+Imp1plot<- ggplot(Imp1AvgDO, aes(x = Date, y = AvgDO)) +
+geom_point(size=.75, color="royalblue4")  +ylim(0, 15) +ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+  labs(title = "Impoundment 1")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))
 
-ggplot(Imp2AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()+ylab("Avg Daily DO (mgL)")
+Imp1plot
+
+Up2plot<- ggplot(Up2AvgDO, aes(x = Date, y = AvgDO)) +
+geom_point(size=.75, color="royalblue4") +ylim(0, 15) +ylab("Avg Daily DO (mgL)") + xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+   labs(title = "Upstream 2")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))
+
+Up2plot
+
+Imp2plot<- ggplot(Imp2AvgDO, aes(x = Date, y = AvgDO)) +
+geom_point(size=.75, color="royalblue4")+ylab("Avg Daily DO (mgL)")
 summary(Up2_processed$`Dissolved Oxygen`) #No DO data actually exists for Imp2
 
-ggplot(Down1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()+ ylim(10, 15)+ylab("Avg Daily DO (mgL)")
+Down1plot<- ggplot(Down1AvgDO, aes(x = Date, y = AvgDO)) +
+geom_point(size=.75, color="royalblue4")+ ylim(0, 15)+ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+ scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+   labs(title = "Downstream 1")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))
 summary(Down1AvgDO) #655 missing values
 
-ggplot(Down2AAvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()+ylab("Avg Daily DO (mgL)")
+Down1plot
 
-ggplot(Down2BAvgDO, aes(x = Date, y = AvgDO)) +
-geom_point()+ ylim(0,15)+ylab("Avg Daily DO (mgL)")
+Down2Aplot<- ggplot(Down2AAvgDO, aes(x = Date, y = AvgDO)) +
+geom_point(size=.75, color="royalblue4")+ylim(0, 15) +ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+   labs(title = "Downstream 2A")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))
+
+Down2Aplot
+
+Down2Bplot<- ggplot(Down2BAvgDO, aes(x = Date, y = AvgDO)) +
+geom_point(size=.75, color="royalblue4")+ ylim(0,15)+ylab("Avg Daily DO (mgL)")+ xlab("Sampling Date")+
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  labs(title = "Downstream 2B")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray80", size = 0.25))
+Down2Bplot
+
+AllUp<- Up1plot+Up2plot
+AllUp
+
+
+AllDown<-Down1plot+Down2Aplot+Down2Bplot
+
+AllDown
+
+Imp1plot
+
 
 #Trying to add in line where dam was removed
 #+abline(v=as.Date("2017-09-21","%Y-%m-%d"))

@@ -300,18 +300,26 @@ AvgDO.twosample.wilcox
 
 
 #Graph this!!
-ggplot(MilburnieDam_AllSitesDO_TimeStamp) +
+MilburnieDam_AvgDO_Q1boxplot<-ggplot(MilburnieDam_AllSitesDO_TimeStamp) +
 geom_boxplot(aes(x = TimeStamp, y = AvgDO), color="skyblue4", alpha=0.75)+
   xlab("Timeframe in the Dam \nRemoval Process")+
   ylab("Average Dissolved \nOxygen (mgL)")+
   mytheme+
   ylim(0,15)
   
+ggsave("./Outputs/MilburnieDam_AvgDO_Q1boxplot.jpg", plot=MilburnieDam_AvgDO_Q1boxplot, width =10, height=6, units="in", dpi=300)
+
 #summary stats
 tapply(MilburnieDam_AllSitesDO_TimeStamp$AvgDO, MilburnieDam_AllSitesDO_TimeStamp$TimeStamp, summary)
 
 
 #There are a lot of outliers in the Before DO dataset, these include values as low as -888!!!
 #I should eliminate values below 0 and rerun the test.
+```
+
+```{r Statistical Analysis for Question 1 Eliminating Outliers}
+
+
+
 ```
 

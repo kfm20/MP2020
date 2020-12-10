@@ -3,6 +3,8 @@ title: "DOThresholds"
 author: "Kathleen Mason"
 date: "10/22/2020"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r Setup}

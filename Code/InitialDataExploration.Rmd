@@ -21,6 +21,10 @@ library(patchwork)
 
 getwd()
 
+mytheme <- theme_light(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
 
 Up1_processed<-read_csv("./Processed/Up1_processed.csv")
 Up2_processed<-read_csv("./Processed/Up2_processed.csv")
@@ -87,79 +91,77 @@ write.csv(Down2BAvgDO, file = "./Processed/Down2BAvgDO_processed.csv", row.names
 ```{r}
 
 #Graph
-removal_vline <- as.Date(c("2017-09-21"))  
-removal_vline <- which(Up1AvgDO$Date %in% removal_vline)
+#creating line of dam removal date
+d=data.frame(date=as.Date(c("2017-09-21")), event=c("Dam Removal"))
 
 Up1plot <-ggplot(Up1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point(size=.75, color="royalblue4")  + ylim(0, 15) +ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+geom_point(size=.75, color="royalblue4")  + ylim(0, 15) +ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
   labs(title = "Upstream 1")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
-  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
-             col = "red", lwd = .5)
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
+    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+
 
 Up1plot
 
 
 Imp1plot<- ggplot(Imp1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point(size=.75, color="royalblue4")  +ylim(0, 15) +ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+geom_point(size=.75, color="royalblue4")  +ylim(0, 15) +ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
   labs(title = "Impoundment 1")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
-  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
-             col = "red", lwd = .5)
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+                                
+  geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
 
 Imp1plot
 
 Up2plot<- ggplot(Up2AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point(size=.75, color="royalblue4") +ylim(0, 15) +ylab("Avg Daily DO (mg/L)") + xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+geom_point(size=.75, color="royalblue4") +ylim(0, 15) +ylab("Avg Daily DO (mg/L)") + xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
    labs(title = "Upstream 2")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
-  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
-             col = "red", lwd = .5)
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+                                
+  geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+
 
 Up2plot
 
+#No data for Imp2
 Imp2plot<- ggplot(Imp2AvgDO, aes(x = Date, y = AvgDO)) +
 geom_point(size=.75, color="royalblue4")+ylab("Avg Daily DO (mgL)")
 summary(Up2_processed$`Dissolved Oxygen`) #No DO data actually exists for Imp2
 
 Down1plot<- ggplot(Down1AvgDO, aes(x = Date, y = AvgDO)) +
-geom_point(size=.75, color="royalblue4")+ ylim(0, 15)+ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+ scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+geom_point(size=.75, color="royalblue4")+ ylim(0, 15)+ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+ scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
    labs(title = "Downstream 1")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
         panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
-  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
-             col = "red", lwd = .5)
+  geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+
 summary(Down1AvgDO) #655 missing values
 
 Down1plot
 
 Down2Aplot<- ggplot(Down2AAvgDO, aes(x = Date, y = AvgDO)) +
-geom_point(size=.75, color="royalblue4")+ylim(0, 15) +ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+geom_point(size=.75, color="royalblue4")+ylim(0, 15) +ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
    labs(title = "Downstream 2A")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
         panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
-  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
-             col = "red", lwd = .5)
+geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
 
 Down2Aplot
 
 Down2Bplot<- ggplot(Down2BAvgDO, aes(x = Date, y = AvgDO)) +
 geom_point(size=.75, color="royalblue4")+ ylim(0,15)+ylab("Avg Daily DO (mg/L)")+ xlab("Sampling Date")+
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y") +
   labs(title = "Downstream 2B")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
         panel.grid.minor = element_line(color = "gray80", size = 0.25))+                                
-  geom_vline(xintercept = as.numeric(Up1AvgDO$Date[removal_vline]),
-             col = "red", lwd = .5)
+ geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
 Down2Bplot
 
 
@@ -184,6 +186,132 @@ Imp1plot
 summary(Down2BAvgDO)
 ```
 
+```{r Saving plots}
+ggsave("./Outputs/MilburnieDam_AllUpstreamSites_initial.jpg", plot=AllUp, width =10, height=6, units="in", dpi=300)
+ggsave("./Outputs/MilburnieDam_ImpoundmentSites_initial.jpg", plot=Imp1plot, width =10, height=6, units="in", dpi=300)
+ggsave("./Outputs/MilburnieDam_AllDownstreamSites_initial.jpg", plot=AllDown, width =15, height=6, units="in", dpi=300)
 ```
 
+
+#Question 1: Are the DO means equivalent before and after dam removal?
+```{r Setup for Statistical Analysis}
+#Setting up the data in one dataset 
+# Will then divide into two data sets by the removal date to have before and after categories and then run stat analysis
+Up1AvgDOjoin<- Up1AvgDO %>% 
+  mutate(Site = "Upstream1")
+
+Up2AvgDOjoin<- Up2AvgDO %>% 
+  mutate(Site = "Upstream2")
+
+Down1AvgDOjoin<-Down1AvgDO%>% 
+  mutate(Site = "Downstream1")
+
+Down2AAvgDOjoin<-Down2AAvgDO%>% 
+  mutate(Site = "Downstream2A")
+
+Down2BAvgDOjoin<-Down2BAvgDO%>% 
+  mutate(Site = "Downstream2B")
+
+Imp1AvgDOjoin<-Imp1AvgDO%>% 
+  mutate(Site = "Impoundment1")
+
+
+#merging all data frames vertically
+MilburnieDam_AllSitesDO <- rbind(Up1AvgDOjoin, Up2AvgDOjoin, Down1AvgDOjoin, Down2AAvgDOjoin, Down2BAvgDOjoin, Imp1AvgDOjoin)
+
+
+
+#Dividing the data set in two: before and after. The date for removal of the dam will be used as dividing factor
+MilburnieDam_AllSitesDO_Before <- MilburnieDam_AllSitesDO %>% filter(Date < as.Date("2017-09-21"))
+
+MilburnieDam_AllSitesDO_After <- MilburnieDam_AllSitesDO %>% filter(Date > as.Date("2017-09-21"))
+
+
+MilburnieDam_AllSitesDO_After$TimeStamp<-"After"
+MilburnieDam_AllSitesDO_Before$TimeStamp<-"Before"
+
+MilburnieDam_AllSitesDO_TimeStamp<- full_join(MilburnieDam_AllSitesDO_After, MilburnieDam_AllSitesDO_Before)
+
+
+#Save these datasets
+write.csv(MilburnieDam_AllSitesDO, row.names = FALSE, file =("./Processed/MilburnieDam_AllSitesDO_processed.csv"))
+write.csv(MilburnieDam_AllSitesDO_Before, row.names = FALSE, file =("./Processed/MilburnieDam_AllSitesDO_Before_processed.csv"))
+write.csv(MilburnieDam_AllSitesDO_After, row.names = FALSE, file =("./Processed/MilburnieDam_AllSitesDO_After_processed.csv"))
+write.csv(MilburnieDam_AllSitesDO_TimeStamp, row.names = FALSE, file =("./Processed/MilburnieDam_AllSitesDO_TimeStamp_processed.csv"))
+
+#Time for Statistical analysis...
+
+```
+
+```{r Statistical Test to Question 1}
+
+shapiro.test(MilburnieDam_AllSitesDO_TimeStamp$AvgDO[MilburnieDam_AllSitesDO_TimeStamp$TimeStamp == "After"])
+#Results: W = 0.95863, p-value < 2.2e-16
+
+shapiro.test(MilburnieDam_AllSitesDO_TimeStamp$AvgDO[MilburnieDam_AllSitesDO_TimeStamp$TimeStamp == "Before"])
+#Results: W = 0.043862, p-value < 2.2e-16
+
+
+var.test(MilburnieDam_AllSitesDO_TimeStamp$AvgDO ~ MilburnieDam_AllSitesDO_TimeStamp$TimeStamp)
+#Results
+#F = 0.0069476, num df = 1888, denom df = 2767, p-value < 2.2e-16
+#alternative hypothesis: true ratio of variances is not equal to 1
+#95 percent confidence interval:
+ #0.006397852 0.007549537
+#sample estimates:
+#ratio of variances 
+ #      0.006947602 
+
+
+vartest<-ggplot(MilburnieDam_AllSitesDO_TimeStamp, aes(x = AvgDO, color = TimeStamp)) + geom_freqpoly()
+vartest
+
+ AvgDO.twosample <- t.test(MilburnieDam_AllSitesDO_TimeStamp$AvgDO ~ MilburnieDam_AllSitesDO_TimeStamp$TimeStamp) 
+AvgDO.twosample
+#Results:
+#t = 0.46225, df = 2823.2, p-value = 0.6439
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+ #-0.9804282  1.5852870
+#sample estimates:
+ #mean in group After mean in group Before 
+     #       7.896364             7.593935 
+
+AvgDO.twosample$p.value
+#0.6439354
+
+#Format as GLM
+AvgDO.twosample2 <- lm(MilburnieDam_AllSitesDO_TimeStamp$AvgDO ~ MilburnieDam_AllSitesDO_TimeStamp$TimeStamp) 
+summary(AvgDO.twosample2)
+plot(AvgDO.twosample2)
+
+
+#Normality is not met Pvalue <0.05
+
+#Wilcoxon Test
+AvgDO.twosample.wilcox <- wilcox.test(MilburnieDam_AllSitesDO_TimeStamp$AvgDO ~ MilburnieDam_AllSitesDO_TimeStamp$TimeStamp) 
+
+AvgDO.twosample.wilcox
+#Results
+#W = 2057288, p-value < 2.2e-16
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W= 2057288)
+
+
+#Graph this!!
+ggplot(MilburnieDam_AllSitesDO_TimeStamp) +
+geom_boxplot(aes(x = TimeStamp, y = AvgDO), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Average Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ylim(0,15)
+  
+#summary stats
+tapply(MilburnieDam_AllSitesDO_TimeStamp$AvgDO, MilburnieDam_AllSitesDO_TimeStamp$TimeStamp, summary)
+
+
+#There are a lot of outliers in the Before DO dataset, these include values as low as -888!!!
+#I should eliminate values below 0 and rerun the test.
+```
 

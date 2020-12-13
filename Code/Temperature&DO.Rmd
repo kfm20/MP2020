@@ -1,0 +1,229 @@
+---
+title: "Temperature&DO"
+author: "Kathleen Mason"
+date: "12/13/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+##In this Rmarkdown:
+#Setup, upload of datasets, Analysis Question 3
+#Analysis Question 3: Does temperature predict DO on the Neuse River by Milburnie Dam before and after removal?
+
+
+
+```{r Markdown Setup and Uploading}
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+library(dplyr)
+
+getwd()
+
+mytheme <- theme_light(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
+
+
+Up1_processed<-read_csv("./Processed/Up1_processed.csv")
+Up2_processed<-read_csv("./Processed/Up2_processed.csv")
+Imp1_processed<-read_csv("./Processed/Imp1_processed.csv")
+
+Imp2_processed<-read_csv("./Processed/Imp2_processed.csv")
+Down1_processed<-read_csv("./Processed/Down1_processed.csv")
+Down2A_processed<-read_csv("./Processed/Down2A_processed.csv")
+Down2B_processed<-read_csv("./Processed/Down2B_processed.csv")
+
+
+Up1_AvgTemp<-  Up1_processed %>%
+ group_by(Date) %>%
+  summarise(AvgT = mean(`WaterTemp_C`))
+Up2_AvgTemp<-  Up2_processed %>%
+ group_by(Date) %>%
+  summarise(AvgT = mean(`WaterTemp_C`))
+Imp1_AvgTemp<-  Imp1_processed %>%
+ group_by(Date) %>%
+  summarise(AvgT = mean(`WaterTemp_C`))
+Imp2_AvgTemp<-  Imp2_processed %>%
+ group_by(Date) %>%
+  summarise(AvgT = mean(`WaterTemp_C`))
+Down1_AvgTemp<-  Down1_processed %>%
+ group_by(Date) %>%
+  summarise(AvgT = mean(`WaterTemp_C`))
+Down2A_AvgTemp<-  Down2A_processed %>%
+ group_by(Date) %>%
+  summarise(AvgT = mean(`WaterTemp_C`))
+Down2B_AvgTemp<-  Down2B_processed %>%
+ group_by(Date) %>%
+  summarise(AvgT = mean(`WaterTemp_C`))
+
+Up1AvgDO<-read_csv("./Processed/Up1AvgDO_processed.csv")
+Up2AvgDO<-read_csv("./Processed/Up2AvgDO_processed.csv")
+Imp1AvgDO<-read_csv("./Processed/Imp1AvgDO_processed.csv")
+Imp2AvgDO<-read_csv("./Processed/Imp2AvgDO_processed.csv")
+Down1AvgDO<-read_csv("./Processed/Down1AvgDO_processed.csv")
+Down2AAvgDO<-read_csv("./Processed/Down2AAvgDO_processed.csv")
+Down2BAvgDO<-read_csv("./Processed/Down2BAvgDO_processed.csv")
+
+#Now join DO and temps by date
+Up1_DOTemp <- merge(Up1AvgDO,Up1_AvgTemp,by="Date")
+Up2_DOTemp <- merge(Up2AvgDO,Up2_AvgTemp,by="Date")
+Down1_DOTemp <- merge(Down1AvgDO,Down1_AvgTemp,by="Date")
+Down2A_DOTemp <- merge(Down2AAvgDO,Down2A_AvgTemp,by="Date")
+Down2B_DOTemp <- merge(Down2BAvgDO,Down2B_AvgTemp,by="Date")
+Imp1_DOTemp <- merge(Imp1AvgDO,Imp1_AvgTemp,by="Date")
+Imp2_DOTemp <- merge(Imp2AvgDO,Imp2_AvgTemp,by="Date")
+
+#Give them all a site location
+Up1_DOTemp_site<-Up1_DOTemp %>% 
+ mutate( Site = "Upstream1")
+
+Up2_DOTemp_site<- Up2_DOTemp %>% 
+  mutate(Site = "Upstream2")
+
+Down1_DOTemp_site<-Down1_DOTemp %>% 
+  mutate(Site = "Downstream1")
+
+Down2A_DOTemp_site<-Down2A_DOTemp%>% 
+  mutate(Site = "Downstream2A")
+
+Down2B_DOTemp_site<-Down2B_DOTemp%>% 
+  mutate(Site = "Downstream2B")
+
+Imp1_DOTemp_site<-Imp1_DOTemp%>% 
+  mutate(Site = "Impoundment1")
+
+#Join all together
+MilburnieDam_AllSites_DOTemp <- rbind(Up1_DOTemp_site, Up2_DOTemp_site, Down1_DOTemp_site, Down2A_DOTemp_site, Down2B_DOTemp_site, Imp1_DOTemp_site)
+
+#Divide into before and after
+MilburnieDam_AllSites_DOTemp_Before <- MilburnieDam_AllSites_DOTemp %>% filter(Date < as.Date("2017-09-21"))
+
+MilburnieDam_AllSites_DOTemp_After <- MilburnieDam_AllSites_DOTemp %>% filter(Date > as.Date("2017-09-21"))
+
+
+MilburnieDam_AllSites_DOTemp_After$TimeStamp<-"After"
+MilburnieDam_AllSites_DOTemp_Before$TimeStamp<-"Before"
+
+MilburnieDam_AllSites_DOTemp_Q3<- full_join(MilburnieDam_AllSites_DOTemp_After, MilburnieDam_AllSites_DOTemp_Before)
+
+
+write.csv(MilburnieDam_AllSites_DOTemp, row.names = FALSE, file =("./Processed/MilburnieDam_AllSites_DOTemp_processed.csv"))
+write.csv(MilburnieDam_AllSites_DOTemp_Before, row.names = FALSE, file =("./Processed/MilburnieDam_AllSites_DOTemp_Before_processed.csv"))
+write.csv(MilburnieDam_AllSites_DOTemp_After, row.names = FALSE, file =("./Processed/MilburnieDam_AllSites_DOTemp_After_processed.csv"))
+write.csv(MilburnieDam_AllSites_DOTemp_Q3, row.names = FALSE, file =("./Processed/MilburnieDam_AllSites_DOTemp_Q3_processed.csv"))
+
+
+```
+
+```{r Before}
+
+BeforeRegression<-lm(MilburnieDam_AllSites_DOTemp_Q3$AvgDO~MilburnieDam_AllSites_DOTemp_Q3$AvgT)
+summary(BeforeRegression)
+
+cor.test(MilburnieDam_AllSites_DOTemp_Q3$AvgDO, MilburnieDam_AllSites_DOTemp_Q3$AvgT)
+#Results:t = 8.4971, df = 4655, p-value < 2.2e-16
+#alternative hypothesis: true correlation is not equal to 0
+#95 percent confidence interval:
+# 0.09520133 0.15176877
+#sample estimates:
+#      cor 0.1235854 
+
+#graph
+ MilburnieDam_AllSites_DOTemp_Q3_Before <-
+ggplot(MilburnieDam_AllSites_DOTemp_Q3, 
+       aes(x = AvgDO, y = AvgT)) + 
+geom_point( alpha=0.5)+
+  geom_smooth(method = 'lm', se = FALSE, color = "skyblue")+
+  xlab(expression(Average~Dissolved~Oxygen~(mgL)))+
+  ylab("Average Temperature (C)")
+print(MilburnieDam_AllSites_DOTemp_Q3_Before)
+
+#This data set still includes the large AvgDO outliers- these should be removed- make range 0-15 AvgDO again
+#Also large negative numbers for AvgT- what should this range be?
+summary(MilburnieDam_AllSites_DOTemp_Q3)
+
+```
+
+```{r Riding of outliers}
+
+MilburnieDam_AllSites_DOTemp_Q3_range <- subset(MilburnieDam_AllSites_DOTemp_Q3, AvgDO >= 0 & AvgDO  <= 15, 
+select=c(Date:TimeStamp))
+summary(MilburnieDam_AllSites_DOTemp_Q3_range)
+#0-15 AvgDO range also deleted much of the large negative temperatures too
+
+MilburnieDam_AllSites_DOTemp_Before_range <- subset(MilburnieDam_AllSites_DOTemp_Before, AvgDO >= 0 & AvgDO  <= 15, 
+select=c(Date:TimeStamp))
+summary(MilburnieDam_AllSites_DOTemp_Before_range)
+
+MilburnieDam_AllSites_DOTemp_After_range <- subset(MilburnieDam_AllSites_DOTemp_After, AvgDO >= 0 & AvgDO  <= 15, 
+select=c(Date:TimeStamp))
+summary(MilburnieDam_AllSites_DOTemp_After_range)
+
+#Let's try the test and graph again now...
+
+```
+
+```{r Statistical Test Round 2}
+BeforeRegression2<-lm(MilburnieDam_AllSites_DOTemp_Before_range$AvgDO~MilburnieDam_AllSites_DOTemp_Before_range$AvgT)
+summary(BeforeRegression2)
+#Reults:
+#Multiple R-squared:  0.7112,	Adjusted R-squared:  0.7111 
+#F-statistic:  6593 on 1 and 2677 DF,  p-value: < 2.2e-16
+
+cor.test(MilburnieDam_AllSites_DOTemp_Before_range$AvgDO, MilburnieDam_AllSites_DOTemp_Before_range$AvgT)
+#Results:
+#t = -81.195, df = 2677, p-value < 2.2e-16
+#alternative hypothesis: true correlation is not equal to 0
+#95 percent confidence interval:
+# -0.8539304 -0.8320350
+#sample estimates:
+#       cor  -0.8433323 
+
+#graph
+ MilburnieDam_AllSites_DOTemp_Q3_Before <-
+ggplot(MilburnieDam_AllSites_DOTemp_Before_range, 
+       aes(x = AvgDO, y = AvgT)) + 
+geom_point( alpha=0.5)+
+  geom_smooth(method = 'lm', se = FALSE, color = "skyblue")+
+  xlab(expression(Average~Dissolved~Oxygen~(mgL)))+
+  ylab("Average Temperature (C)")
+print(MilburnieDam_AllSites_DOTemp_Q3_Before)
+
+ggsave("./Outputs/MilburnieDam_AllSites_DOTemp_Q3_Before.jpg", plot=MilburnieDam_AllSites_DOTemp_Q3_Before, width =10, height=6, units="in", dpi=300)
+
+
+```
+
+```{r After}
+AfterRegression2<-lm(MilburnieDam_AllSites_DOTemp_After_range$AvgDO~MilburnieDam_AllSites_DOTemp_After_range$AvgT)
+summary(AfterRegression2)
+#Reults:
+#Multiple R-squared:  0.5766,	Adjusted R-squared:  0.5763 
+#F-statistic:  2550 on 1 and 1873 DF,  p-value: < 2.2e-16
+
+cor.test(MilburnieDam_AllSites_DOTemp_After_range$AvgDO, MilburnieDam_AllSites_DOTemp_After_range$AvgT)
+#Results:
+#t = -50.502, df = 1873, p-value < 2.2e-16
+#alternative hypothesis: true correlation is not equal to 0
+#95 percent confidence interval:
+# -0.7778555 -0.7394743
+#sample estimates:
+#       cor   -0.7593245 
+
+#graph
+ MilburnieDam_AllSites_DOTemp_Q3_After <-
+ggplot(MilburnieDam_AllSites_DOTemp_After_range, 
+       aes(x = AvgDO, y = AvgT)) + 
+geom_point( alpha=0.5)+
+  geom_smooth(method = 'lm', se = FALSE, color = "skyblue")+
+  xlab(expression(Average~Dissolved~Oxygen~(mgL)))+
+  ylab("Average Temperature (C)")
+print(MilburnieDam_AllSites_DOTemp_Q3_After)
+
+ggsave("./Outputs/MilburnieDam_AllSites_DOTemp_Q3_After.jpg", plot=MilburnieDam_AllSites_DOTemp_Q3_After, width =10, height=6, units="in", dpi=300)
+
+```
+

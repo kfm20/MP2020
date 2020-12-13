@@ -3,9 +3,229 @@ title: "Upstreamvs.Downstream"
 author: "Kathleen Mason"
 date: "12/10/2020"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
-```{r}
+##In this Rmarkdown:
+#Uploading relevant datasets, Analysis Question 2
+#Question 2: Are the DO daily means equivalent upstream and downstream both before and after dam removal?
+#Part A of Q2:Are the daily DO means before dam removal equivalent upstream and downstream of the dam?
+#Part B of Q2: Are the daily DO means after dam removal equivalent upstream and downstream of the dam?
+
+
+
+```{r Setup and Upload}
+
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+library(dplyr)
+
+getwd()
+
+mytheme <- theme_light(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
+
+MilburnieDam_AllSitesDO_TimeStampSUBSET<-read_csv("./Processed/MilburnieDam_AllSitesDO_TimeStampSUBSET_processed.csv")
+MilburnieDam_AllSitesDO_BeforeSUBSET<-read_csv("./Processed/MilburnieDam_AllSitesDO_AfterSUBSET_processed.csv")
+MilburnieDam_AllSitesDO_AfterSUBSET<-read_csv("./Processed/MilburnieDam_AllSitesDO_BeforeSUBSET_processed.csv")
+
+
+```
+
+#I need to split the BEFORE data set into upstream and downstream to run the two sample t-test on like I did in Question 1
+#Then I will also split up the AFTER data into upstream downstream to run the same test again
+```{r Setting Up Before Dataset}
+
+#BEFORE DATASET
+#Upstream separation
+targetup <- c("Upstream1", "Upstream2", "Upstream3")
+MilburnieDam_AllSitesDO_BeforeUpstream <- filter(MilburnieDam_AllSitesDO_BeforeSUBSET, Site %in% targetup)
+MilburnieDam_AllSitesDO_BeforeUpstream$Location<-"Upstream"
+write.csv(MilburnieDam_AllSitesDO_BeforeUpstream, row.names = FALSE, file =("./Processed/MilburnieDam_AllSitesDO_BeforeUpstream_processed.csv"))
+
+#Downstream separation
+targetdown <- c("Downstream1", "Downstream2A", "Downstream2B")
+MilburnieDam_AllSitesDO_BeforeDownstream <- filter(MilburnieDam_AllSitesDO_BeforeSUBSET, Site %in% targetdown)
+MilburnieDam_AllSitesDO_BeforeDownstream$Location<-"Downstream"
+write.csv(MilburnieDam_AllSitesDO_BeforeDownstream, row.names = FALSE, file =("./Processed/MilburnieDam_AllSitesDO_BeforeDownstream_processed.csv"))
+
+#Combine the two back together
+MilburnieDam_Q2_BeforeUpvsDown<- full_join(MilburnieDam_AllSitesDO_BeforeDownstream, MilburnieDam_AllSitesDO_BeforeUpstream)
+write.csv(MilburnieDam_Q2_BeforeUpvsDown, row.names = FALSE, file =("./Processed/MilburnieDam_Q2_BeforeUpvsDown_processed.csv"))
+
+
+```
+
+#Now we can run a statistical analysis on the Before data to determine if DO means before dam removal are equivalent upstream and downstream of the dam.
+```{r Before Removal Statistical Analysis}
+
+shapiro.test(MilburnieDam_Q2_BeforeUpvsDown$AvgDO[MilburnieDam_Q2_BeforeUpvsDown$Location == "Upstream"])
+#Results: W = 0.94248, p-value = 3.702e-15
+
+shapiro.test(MilburnieDam_Q2_BeforeUpvsDown$AvgDO[MilburnieDam_Q2_BeforeUpvsDown$Location == "Downstream"])
+#Results: W = 0.97528, p-value = 2.667e-11
+
+
+var.test(MilburnieDam_Q2_BeforeUpvsDown$AvgDO ~ MilburnieDam_Q2_BeforeUpvsDown$Location)
+#Results
+#F = 1.0381, num df = 908, denom df = 648, p-value = 0.6102
+#alternative hypothesis: true ratio of variances is not equal to 1
+#95 percent confidence interval:
+# 0.8993459 1.1962747
+#sample estimates:
+#ratio of variances 
+#          1.038133 
+
+
+vartest<-ggplot(MilburnieDam_Q2_BeforeUpvsDown, aes(x = AvgDO, color = Location)) + geom_freqpoly()
+vartest
+
+AvgDO.UpvsDown.twosample <- t.test(MilburnieDam_Q2_BeforeUpvsDown$AvgDO ~ MilburnieDam_Q2_BeforeUpvsDown$Location) 
+AvgDO.UpvsDown.twosample
+#Results
+#t = -3.6291, df = 1411.3, p-value = 0.0002945
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+# -0.7957353 -0.2373324
+#sample estimates:
+#mean in group Downstream   mean in group Upstream 
+  #              7.734424                 8.250958 
+
+AvgDO.UpvsDown.twosample$p.value
+#Results= 0.0002945363
+
+#Format as GLM
+AvgDO.UpvsDown.twosample2 <- lm(MilburnieDam_Q2_BeforeUpvsDown$AvgDO ~ MilburnieDam_Q2_BeforeUpvsDown$Location) 
+summary(AvgDO.UpvsDown.twosample2)
+plot(AvgDO.UpvsDown.twosample2)
+
+
+
+#Normality is not met Pvalue < 0.05
+
+#Wilcoxon Test
+AvgDO.UpvsDown.wilcox <- wilcox.test(MilburnieDam_Q2_BeforeUpvsDown$AvgDO ~ MilburnieDam_Q2_BeforeUpvsDown$Location) 
+
+AvgDO.UpvsDown.wilcox
+#Results
+#W = 257958, p-value = 2.361e-05
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  1889176)
+
+#Graph this!
+MilburnieDam_Q2_BeforeUpvsDown_Q2boxplot<-ggplot(MilburnieDam_Q2_BeforeUpvsDown) +
+geom_boxplot(aes(x = Location , y = AvgDO), color="skyblue4", alpha=0.75)+
+  xlab("Location")+
+  ylab("Average Dissolved \nOxygen (mgL)")+
+  mytheme
+
+MilburnieDam_Q2_BeforeUpvsDown_Q2boxplot
+
+ggsave("./Outputs/MilburnieDam_Q2_BeforeUpvsDown_Q2boxplot.jpg", plot=MilburnieDam_Q2_BeforeUpvsDown_Q2boxplot, width =10, height=6, units="in", dpi=300)
+
+```
+
+
+
+
+#AFTER Now
+
+```{r Setup of After Dataset}
+#AFTER DATASET
+#Upstream separation
+targetup <- c("Upstream1", "Upstream2", "Upstream3")
+MilburnieDam_AllSitesDO_AfterUpstream <- filter(MilburnieDam_AllSitesDO_AfterSUBSET, Site %in% targetup)
+MilburnieDam_AllSitesDO_AfterUpstream$Location<-"Upstream"
+write.csv(MilburnieDam_AllSitesDO_AfterUpstream, row.names = FALSE, file =("./Processed/MilburnieDam_AllSitesDO_AfterUpstream_processed.csv"))
+
+#Downstream separation
+targetdown <- c("Downstream1", "Downstream2A", "Downstream2B")
+MilburnieDam_AllSitesDO_AfterDownstream <- filter(MilburnieDam_AllSitesDO_AfterSUBSET, Site %in% targetdown)
+MilburnieDam_AllSitesDO_AfterDownstream$Location<-"Downstream"
+write.csv(MilburnieDam_AllSitesDO_AfterDownstream, row.names = FALSE, file =("./Processed/MilburnieDam_AllSitesDO_AfterDownstream_processed.csv"))
+
+#Combine the two back together
+MilburnieDam_Q2_AfterUpvsDown<- full_join(MilburnieDam_AllSitesDO_AfterDownstream, MilburnieDam_AllSitesDO_AfterUpstream)
+write.csv(MilburnieDam_Q2_AfterUpvsDown, row.names = FALSE, file =("./Processed/MilburnieDam_Q2_AfterUpvsDown_processed.csv"))
+
+```
+
+#Now we can run a statistical analysis on the After data to determine if DO means before dam removal are equivalent upstream and downstream of the dam.
+```{r Statistical Analysis on After Removal}
+
+shapiro.test(MilburnieDam_Q2_AfterUpvsDown$AvgDO[MilburnieDam_Q2_AfterUpvsDown$Location == "Upstream"])
+#Results: W = 0.94276, p-value < 2.2e-16
+
+shapiro.test(MilburnieDam_Q2_AfterUpvsDown$AvgDO[MilburnieDam_Q2_AfterUpvsDown$Location == "Downstream"])
+#Results: W = 0.96158, p-value < 2.2e-16
+
+
+var.test(MilburnieDam_Q2_AfterUpvsDown$AvgDO ~ MilburnieDam_Q2_AfterUpvsDown$Location)
+#Results
+#F = 0.86664, num df = 1342, denom df = 948, p-value = 0.01651
+#alternative hypothesis: true ratio of variances is not equal to 1
+#95 percent confidence interval:
+ #0.7699730 0.9742568
+#sample estimates:
+#ratio of variances 
+ #        0.8666357 
+
+
+vartest2<-ggplot(MilburnieDam_Q2_AfterUpvsDown, aes(x = AvgDO, color = Location)) + geom_freqpoly()
+vartest
+
+AvgDO.UpvsDown2.twosample <- t.test(MilburnieDam_Q2_AfterUpvsDown$AvgDO ~ MilburnieDam_Q2_AfterUpvsDown$Location) 
+AvgDO.UpvsDown2.twosample
+#Results
+#t = -0.84154, df = 1948.4, p-value = 0.4002
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+# -0.2965370  0.1184623
+#sample estimates:
+#mean in group Downstream   mean in group Upstream 
+ #               9.264027                 9.353064 
+
+AvgDO.UpvsDown2.twosample$p.value
+#Results= 0.4001508
+
+#Format as GLM
+AvgDO.UpvsDown2.twosample2 <- lm(MilburnieDam_Q2_AfterUpvsDown$AvgDO ~ MilburnieDam_Q2_AfterUpvsDown$Location) 
+summary(AvgDO.UpvsDown2.twosample2)
+plot(AvgDO.UpvsDown2.twosample2)
+
+
+
+#***Normality is met Pvalue > 0.05
+
+#Wilcoxon Test
+AvgDO.UpvsDown2.wilcox <- wilcox.test(MilburnieDam_Q2_AfterUpvsDown$AvgDO ~ MilburnieDam_Q2_AfterUpvsDown$Location) 
+
+AvgDO.UpvsDown2.wilcox
+#Results
+#W = 641046, p-value = 0.808
+#alternative hypothesis: true location shift is not equal to 0
+
+
+#Interpretation.... NO significant difference in Avg daily DO during and after the dam removal(p value>0.0001, Wilcoxon test, W= 641046)
+
+#Graph this!
+MilburnieDam_Q2_AfterUpvsDown_Q2boxplot<-ggplot(MilburnieDam_Q2_AfterUpvsDown) +
+geom_boxplot(aes(x = Location , y = AvgDO), color="skyblue4", alpha=0.75)+
+  xlab("Location")+
+  ylab("Average Dissolved \nOxygen (mgL)")+
+  mytheme
+
+MilburnieDam_Q2_AfterUpvsDown_Q2boxplot
+
+ggsave("./Outputs/MilburnieDam_Q2_AfterUpvsDown_Q2boxplot.jpg", plot=MilburnieDam_Q2_AfterUpvsDown_Q2boxplot, width =10, height=6, units="in", dpi=300)
+
+
+
 
 ```
 

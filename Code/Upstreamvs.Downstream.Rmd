@@ -115,7 +115,7 @@ AvgDO.UpvsDown.wilcox
 #W = 257958, p-value = 2.361e-05
 #alternative hypothesis: true location shift is not equal to 0
 
-#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  1889176)
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  257958)
 
 #Graph this!
 MilburnieDam_Q2_BeforeUpvsDown_Q2boxplot<-ggplot(MilburnieDam_Q2_BeforeUpvsDown) +
@@ -127,6 +127,9 @@ geom_boxplot(aes(x = Location , y = AvgDO), color="skyblue4", alpha=0.75)+
 MilburnieDam_Q2_BeforeUpvsDown_Q2boxplot
 
 ggsave("./Outputs/MilburnieDam_Q2_BeforeUpvsDown_Q2boxplot.jpg", plot=MilburnieDam_Q2_BeforeUpvsDown_Q2boxplot, width =10, height=6, units="in", dpi=300)
+
+tapply(MilburnieDam_Q2_BeforeUpvsDown$AvgDO, MilburnieDam_Q2_BeforeUpvsDown$Location, summary)
+
 
 ```
 
@@ -225,7 +228,7 @@ MilburnieDam_Q2_AfterUpvsDown_Q2boxplot
 ggsave("./Outputs/MilburnieDam_Q2_AfterUpvsDown_Q2boxplot.jpg", plot=MilburnieDam_Q2_AfterUpvsDown_Q2boxplot, width =10, height=6, units="in", dpi=300)
 
 
-
+tapply(MilburnieDam_Q2_AfterUpvsDown$AvgDO, MilburnieDam_Q2_AfterUpvsDown$Location, summary)
 
 ```
 

@@ -166,14 +166,14 @@ summary(MilburnieDam_AllSites_DOTemp_After_range)
 
 ```
 
-```{r Statistical Test Round 2}
-BeforeRegression2<-lm(MilburnieDam_AllSites_DOTemp_Before_range$AvgDO~MilburnieDam_AllSites_DOTemp_Before_range$AvgT)
+```{r Statistical Test Round 2 Before}
+BeforeRegression2<-lm(MilburnieDam_AllSites_DOTemp_Before_range$AvgT~MilburnieDam_AllSites_DOTemp_Before_range$AvgDO)
 summary(BeforeRegression2)
 #Reults:
 #Multiple R-squared:  0.7112,	Adjusted R-squared:  0.7111 
 #F-statistic:  6593 on 1 and 2677 DF,  p-value: < 2.2e-16
 
-cor.test(MilburnieDam_AllSites_DOTemp_Before_range$AvgDO, MilburnieDam_AllSites_DOTemp_Before_range$AvgT)
+cor.test(MilburnieDam_AllSites_DOTemp_Before_range$AvgT, MilburnieDam_AllSites_DOTemp_Before_range$AvgDO)
 #Results:
 #t = -81.195, df = 2677, p-value < 2.2e-16
 #alternative hypothesis: true correlation is not equal to 0
@@ -185,11 +185,11 @@ cor.test(MilburnieDam_AllSites_DOTemp_Before_range$AvgDO, MilburnieDam_AllSites_
 #graph
  MilburnieDam_AllSites_DOTemp_Q3_Before <-
 ggplot(MilburnieDam_AllSites_DOTemp_Before_range, 
-       aes(x = AvgDO, y = AvgT)) + 
+       aes(x = AvgT, y = AvgDO)) + 
 geom_point( alpha=0.5)+
   geom_smooth(method = 'lm', se = FALSE, color = "skyblue")+
-  xlab(expression(Average~Dissolved~Oxygen~(mgL)))+
-  ylab("Average Temperature (C)")
+  ylab(expression(Average~Dissolved~Oxygen~(mgL)))+
+  xlab("Average Temperature (C)")
 print(MilburnieDam_AllSites_DOTemp_Q3_Before)
 
 ggsave("./Outputs/MilburnieDam_AllSites_DOTemp_Q3_Before.jpg", plot=MilburnieDam_AllSites_DOTemp_Q3_Before, width =10, height=6, units="in", dpi=300)
@@ -198,13 +198,13 @@ ggsave("./Outputs/MilburnieDam_AllSites_DOTemp_Q3_Before.jpg", plot=MilburnieDam
 ```
 
 ```{r After}
-AfterRegression2<-lm(MilburnieDam_AllSites_DOTemp_After_range$AvgDO~MilburnieDam_AllSites_DOTemp_After_range$AvgT)
+AfterRegression2<-lm(MilburnieDam_AllSites_DOTemp_After_range$AvgT~MilburnieDam_AllSites_DOTemp_After_range$AvgDO)
 summary(AfterRegression2)
 #Reults:
 #Multiple R-squared:  0.5766,	Adjusted R-squared:  0.5763 
 #F-statistic:  2550 on 1 and 1873 DF,  p-value: < 2.2e-16
 
-cor.test(MilburnieDam_AllSites_DOTemp_After_range$AvgDO, MilburnieDam_AllSites_DOTemp_After_range$AvgT)
+cor.test(MilburnieDam_AllSites_DOTemp_After_range$AvgT, MilburnieDam_AllSites_DOTemp_After_range$AvgDO)
 #Results:
 #t = -50.502, df = 1873, p-value < 2.2e-16
 #alternative hypothesis: true correlation is not equal to 0
@@ -216,11 +216,11 @@ cor.test(MilburnieDam_AllSites_DOTemp_After_range$AvgDO, MilburnieDam_AllSites_D
 #graph
  MilburnieDam_AllSites_DOTemp_Q3_After <-
 ggplot(MilburnieDam_AllSites_DOTemp_After_range, 
-       aes(x = AvgDO, y = AvgT)) + 
+       aes(x = AvgT, y = AvgDO)) + 
 geom_point( alpha=0.5)+
   geom_smooth(method = 'lm', se = FALSE, color = "skyblue")+
-  xlab(expression(Average~Dissolved~Oxygen~(mgL)))+
-  ylab("Average Temperature (C)")
+  ylab(expression(Average~Dissolved~Oxygen~(mgL)))+
+  xlab("Average Temperature (C)")
 print(MilburnieDam_AllSites_DOTemp_Q3_After)
 
 ggsave("./Outputs/MilburnieDam_AllSites_DOTemp_Q3_After.jpg", plot=MilburnieDam_AllSites_DOTemp_Q3_After, width =10, height=6, units="in", dpi=300)

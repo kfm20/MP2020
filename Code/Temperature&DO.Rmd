@@ -188,8 +188,9 @@ ggplot(MilburnieDam_AllSites_DOTemp_Before_range,
        aes(x = AvgT, y = AvgDO)) + 
 geom_point( alpha=0.5)+
   geom_smooth(method = 'lm', se = FALSE, color = "skyblue")+
-  ylab(expression(Average~Dissolved~Oxygen~(mgL)))+
-  xlab("Average Temperature (C)")
+  ylab(expression(Average~Dissolved~Oxygen~(mg/L)))+
+  xlab("Average Temperature (C)")+
+   ggtitle("Before Dam Removal")
 print(MilburnieDam_AllSites_DOTemp_Q3_Before)
 
 ggsave("./Outputs/MilburnieDam_AllSites_DOTemp_Q3_Before.jpg", plot=MilburnieDam_AllSites_DOTemp_Q3_Before, width =10, height=6, units="in", dpi=300)
@@ -219,8 +220,9 @@ ggplot(MilburnieDam_AllSites_DOTemp_After_range,
        aes(x = AvgT, y = AvgDO)) + 
 geom_point( alpha=0.5)+
   geom_smooth(method = 'lm', se = FALSE, color = "skyblue")+
-  ylab(expression(Average~Dissolved~Oxygen~(mgL)))+
-  xlab("Average Temperature (C)")
+  ylab(expression(Average~Dissolved~Oxygen~(mg/L)))+
+  xlab("Average Temperature (C)")+
+   ggtitle("After Dam Removal")
 print(MilburnieDam_AllSites_DOTemp_Q3_After)
 
 ggsave("./Outputs/MilburnieDam_AllSites_DOTemp_Q3_After.jpg", plot=MilburnieDam_AllSites_DOTemp_Q3_After, width =10, height=6, units="in", dpi=300)

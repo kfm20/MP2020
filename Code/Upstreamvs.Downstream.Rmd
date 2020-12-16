@@ -122,7 +122,8 @@ MilburnieDam_Q2_BeforeUpvsDown_Q2boxplot<-ggplot(MilburnieDam_Q2_BeforeUpvsDown)
 geom_boxplot(aes(x = Location , y = AvgDO), color="skyblue4", alpha=0.75)+
   xlab("Location")+
   ylab("Average Dissolved \nOxygen (mgL)")+
-  mytheme
+  mytheme+
+  ggtitle("Before Dam Removal")
 
 MilburnieDam_Q2_BeforeUpvsDown_Q2boxplot
 
@@ -221,7 +222,8 @@ MilburnieDam_Q2_AfterUpvsDown_Q2boxplot<-ggplot(MilburnieDam_Q2_AfterUpvsDown) +
 geom_boxplot(aes(x = Location , y = AvgDO), color="skyblue4", alpha=0.75)+
   xlab("Location")+
   ylab("Average Dissolved \nOxygen (mgL)")+
-  mytheme
+  mytheme+
+  ggtitle("After Dam Removal")
 
 MilburnieDam_Q2_AfterUpvsDown_Q2boxplot
 

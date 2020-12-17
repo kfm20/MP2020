@@ -320,12 +320,20 @@ geom_boxplot(aes(x = TimeStamp, y = AvgDO), color="skyblue4", alpha=0.75)+
   ylab("Average Dissolved \nOxygen (mgL)")+
   mytheme+
   ylim(0,15)
+MilburnieDam_AvgDO_Q1boxplot
   
 ggsave("./Outputs/MilburnieDam_AvgDO_Q1boxplot.jpg", plot=MilburnieDam_AvgDO_Q1boxplot, width =10, height=6, units="in", dpi=300)
 ggsave("./Outputs/MilburnieDam_AvgDO_Q1boxplot_1.jpg", plot=MilburnieDam_AvgDO_Q1boxplot_1, width =10, height=6, units="in", dpi=300)
 
 #summary stats
 tapply(MilburnieDam_AllSitesDO_TimeStamp$AvgDO, MilburnieDam_AllSitesDO_TimeStamp$TimeStamp, summary)
+#$After
+ #  Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+# -0.010   6.280   7.864   7.896  10.145  14.039     630 
+
+#$Before
+#    Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     NA's 
+#-888.880    6.950    8.860    7.594   11.303   14.411      317 
 
 
 #***There are a lot of outliers in the Before DO dataset, these include values as low as -888!!!
@@ -421,12 +429,269 @@ geom_boxplot(aes(x = TimeStamp, y = AvgDO), color="skyblue4", alpha=0.75)+
 #+ylim(0,15)
 MilburnieDam_AvgDO_SUBSET_Q1boxplot
   
-ggsave("./Outputs/MilburnieDam_AvgDO_Q1boxplot.jpg", plot=MilburnieDam_AvgDO_Q1boxplot, width =10, height=6, units="in", dpi=300)
+ggsave("./Outputs/MilburnieDam_AvgDO_Q1boxplot_subset.jpg", plot=MilburnieDam_AvgDO_Q1boxplot, width =10, height=6, units="in", dpi=300)
 
 #summary stats
 tapply(MilburnieDam_AllSitesDO_TimeStampSUBSET$AvgDO, MilburnieDam_AllSitesDO_TimeStampSUBSET$TimeStamp, summary)
 
 #Same results but with a different magnitude
 #Same interpretation
+```
+
+```{r Dividing Q1 into sites}
+# use MilburnieDam_AllSitesDO_TimeStampSUBSET and divide into the different sites
+
+
+targetup1 <- c("Upstream1", "Upstream2")
+MilburnieDam_Upstream_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetup1)
+MilburnieDam_Upstream_Q1$Location<-"Upstream"
+
+write.csv(MilburnieDam_Upstream_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Upstream_Q1 _processed.csv"))
+
+
+targetimp1 <- c("Impoundment1", "Impoundment2")
+MilburnieDam_Impoundment_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetimp1)
+MilburnieDam_Impoundment_Q1$Location<-"Impoundment"
+
+write.csv(MilburnieDam_Impoundment_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Impoundment_Q1 _processed.csv"))
+
+
+targetdown1 <- c("Downstream1", "Downstream2A", "Downstream2B")
+MilburnieDam_Downstream_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetdown1)
+MilburnieDam_Downstream_Q1$Location<-"Downstream"
+
+write.csv(MilburnieDam_Downstream_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Downstream_Q1 _processed.csv"))
+
+##Now compare before and after dam removal for each site location...
+
+```
+
+```{r Upstream Sites}
+
+shapiro.test(MilburnieDam_Upstream_Q1$AvgDO[MilburnieDam_Upstream_Q1$TimeStamp == "After"])
+#Results: W = 0.94248, p-value = 3.702e-15
+
+shapiro.test(MilburnieDam_Upstream_Q1$AvgDO[MilburnieDam_Upstream_Q1$TimeStamp == "Before"])
+#Results:  W = 0.94276, p-value < 2.2e-16
+
+
+var.test(MilburnieDam_Upstream_Q1$AvgDO ~ MilburnieDam_Upstream_Q1$TimeStamp)
+#Results F = 1.146, num df = 648, denom df = 948, p-value = 0.05715
+#alternative hypothesis: true ratio of variances is not equal to 1
+#95 percent confidence interval:
+# 0.9958734 1.3213372
+#sample estimates:
+#ratio of variances 
+    #      1.146028 
+
+vartest_Up1<-ggplot(MilburnieDam_Upstream_Q1, aes(x = AvgDO, color = TimeStamp)) + geom_freqpoly()
+vartest_Up1
+
+ AvgDO_Q1_Up.twosample <- t.test(MilburnieDam_Upstream_Q1$AvgDO ~ MilburnieDam_Upstream_Q1$TimeStamp) 
+AvgDO_Q1_Up.twosample
+#Results:
+#t = -8.086, df = 1328.7, p-value = 1.376e-15
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+ #-1.3694891 -0.8347233
+#sample estimates:
+# mean in group After mean in group Before 
+  #          8.250958             9.353064 
+
+AvgDO_Q1_Up.twosample$p.value
+# 1.375969e-15
+
+#Format as GLM
+AvgDO_Q1_Up.twosample2 <- lm(MilburnieDam_Upstream_Q1$AvgDO ~ MilburnieDam_Upstream_Q1$TimeStamp) 
+summary(AvgDO_Q1_Up.twosample2)
+plot(AvgDO_Q1_Up.twosample2)
+
+
+#Normality is not met Pvalue <0.05
+
+#Wilcoxon Test
+AvgDO_Q1_Up.twosample.wilcox <- wilcox.test(MilburnieDam_Upstream_Q1$AvgDO ~ MilburnieDam_Upstream_Q1$TimeStamp) 
+
+AvgDO_Q1_Up.twosample.wilcox
+#Results
+#W = 246658, p-value = 1.326e-11
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  246658)
+
+#Graph this!
+MilburnieDam_AvgDO_Q1_Up_boxplot<-ggplot(MilburnieDam_Upstream_Q1) +
+geom_boxplot(aes(x = TimeStamp, y = AvgDO), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Average Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ggtitle("Upstream Sites")
+#+ylim(0,15)
+MilburnieDam_AvgDO_Q1_Up_boxplot
+  
+ggsave("./Outputs/MilburnieDam_AvgDO_Q1_Up_boxplot.jpg", plot=MilburnieDam_AvgDO_Q1_Up_boxplot, width =10, height=6, units="in", dpi=300)
+
+#summary stats
+tapply(MilburnieDam_Upstream_Q1$AvgDO, MilburnieDam_Upstream_Q1$TimeStamp, summary)
+#$After
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  #0.000   6.539   8.128   8.251  10.484  13.276 
+
+#$Before
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.0483  6.9214  9.2257  9.3531 11.5272 14.3766 
+
+```
+
+```{r Impoundment Sites}
+shapiro.test(MilburnieDam_Impoundment_Q1$AvgDO[MilburnieDam_Impoundment_Q1$TimeStamp == "After"])
+#Results: W = 0.94117, p-value = 6.558e-10
+
+shapiro.test(MilburnieDam_Impoundment_Q1$AvgDO[MilburnieDam_Impoundment_Q1$TimeStamp == "Before"])
+#Results:  W = 0.96531, p-value = 6.079e-08
+
+
+var.test(MilburnieDam_Impoundment_Q1$AvgDO ~ MilburnieDam_Impoundment_Q1$TimeStamp)
+#Results F = 0.77383, num df = 316, denom df = 386, p-value = 0.01772
+#alternative hypothesis: true ratio of variances is not equal to 1
+#95 percent confidence interval:
+# 0.6275617 0.9563216
+#sample estimates:
+#ratio of variances 
+  #       0.7738264 
+
+vartest_Imp1<-ggplot(MilburnieDam_Impoundment_Q1, aes(x = AvgDO, color = TimeStamp)) + geom_freqpoly()
+vartest_Imp1
+
+ AvgDO_Q1_Imp.twosample <- t.test(MilburnieDam_Impoundment_Q1$AvgDO ~ MilburnieDam_Impoundment_Q1$TimeStamp) 
+AvgDO_Q1_Imp.twosample
+#Results:
+#t = -2.3727, df = 698.42, p-value = 0.01793
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+# -0.96130475 -0.09075482
+#sample estimates:
+# mean in group After mean in group Before 
+ #           7.983866             8.509896 
+
+AvgDO_Q1_Imp.twosample$p.value
+# 0.01792709
+
+#Format as GLM
+AvgDO_Q1_Imp.twosample2 <- lm(MilburnieDam_Impoundment_Q1$AvgDO ~ MilburnieDam_Impoundment_Q1$TimeStamp) 
+summary(AvgDO_Q1_Imp.twosample2)
+plot(AvgDO_Q1_Imp.twosample2)
+
+
+#Normality is  met Pvalue >0.05
+
+#Wilcoxon Test
+AvgDO_Q1_Imp.twosample.wilcox <- wilcox.test(MilburnieDam_Impoundment_Q1$AvgDO ~ MilburnieDam_Impoundment_Q1$TimeStamp) 
+
+AvgDO_Q1_Imp.twosample.wilcox
+#Results
+#W = 55191, p-value = 0.02202
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... no significant difference in Avg daily DO during and after the dam removal(p value>0.0001, Wilcoxon test, W = 55191)
+
+#Graph this!
+MilburnieDam_AvgDO_Q1_Imp_boxplot<-ggplot(MilburnieDam_Impoundment_Q1) +
+geom_boxplot(aes(x = TimeStamp, y = AvgDO), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Average Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ggtitle("Impoundment Sites")
+#+ylim(0,15)
+MilburnieDam_AvgDO_Q1_Imp_boxplot
+  
+ggsave("./Outputs/MilburnieDam_AvgDO_Q1_Imp_boxplot.jpg", plot=MilburnieDam_AvgDO_Q1_Imp_boxplot, width =10, height=6, units="in", dpi=300)
+
+#summary stats
+tapply(MilburnieDam_Impoundment_Q1$AvgDO, MilburnieDam_Impoundment_Q1$TimeStamp, summary)
+#$After
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  #0.02813  6.39434  7.50417  7.98387 10.08809 13.15788 
+
+
+#$Before
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.0659  6.3631  8.4339  8.5099 11.1135 14.2419 
+```
+
+```{r Downstream Sites}
+shapiro.test(MilburnieDam_Downstream_Q1$AvgDO[MilburnieDam_Downstream_Q1$TimeStamp == "After"])
+#Results:W = 0.97528, p-value = 2.667e-11
+
+shapiro.test(MilburnieDam_Downstream_Q1$AvgDO[MilburnieDam_Downstream_Q1$TimeStamp == "Before"])
+#Results:  W = 0.96158, p-value < 2.2e-16
+
+
+var.test(MilburnieDam_Downstream_Q1$AvgDO ~ MilburnieDam_Downstream_Q1$TimeStamp)
+#Results F = 1.3728, num df = 908, denom df = 1342, p-value = 1.443e-07
+#alternative hypothesis: true ratio of variances is not equal to 1
+#95 percent confidence interval
+# 1.219433 1.547635
+#sample estimates:
+#ratio of variances 
+ #         1.372814  
+
+vartest_Down1<-ggplot(MilburnieDam_Downstream_Q1, aes(x = AvgDO, color = TimeStamp)) + geom_freqpoly()
+vartest_Down1
+
+ AvgDO_Q1_Down.twosample <- t.test(MilburnieDam_Downstream_Q1$AvgDO ~ MilburnieDam_Downstream_Q1$TimeStamp) 
+AvgDO_Q1_Down.twosample
+#Results:
+#t = -13.48, df = 1738.2, p-value < 2.2e-16
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+# -1.752151 -1.307054
+#sample estimates:
+# mean in group After mean in group Before 
+ #           7.734424             9.264027 
+
+AvgDO_Q1_Down.twosample$p.value
+# 1.820982e-39
+
+#Format as GLM
+AvgDO_Q1_Down.twosample2 <- lm(MilburnieDam_Downstream_Q1$AvgDO ~ MilburnieDam_Downstream_Q1$TimeStamp) 
+summary(AvgDO_Q1_Down.twosample2)
+plot(AvgDO_Q1_Down.twosample2)
+
+
+#Normality is  not met Pvalue <0.05
+
+#Wilcoxon Test
+AvgDO_Q1_Down.twosample.wilcox <- wilcox.test(MilburnieDam_Downstream_Q1$AvgDO ~ MilburnieDam_Downstream_Q1$TimeStamp) 
+
+AvgDO_Q1_Down.twosample.wilcox
+#Results
+#W = 414772, p-value < 2.2e-16
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W = 414772)
+
+#Graph this!
+MilburnieDam_AvgDO_Q1_Down_boxplot<-ggplot(MilburnieDam_Downstream_Q1) +
+geom_boxplot(aes(x = TimeStamp, y = AvgDO), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Average Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ggtitle("Downstream Sites")
+#+ylim(0,15)
+MilburnieDam_AvgDO_Q1_Down_boxplot
+  
+ggsave("./Outputs/MilburnieDam_AvgDO_Q1_Down_boxplot.jpg", plot=MilburnieDam_AvgDO_Q1_Down_boxplot, width =10, height=6, units="in", dpi=300)
+
+#summary stats
+tapply(MilburnieDam_Downstream_Q1$AvgDO, MilburnieDam_Downstream_Q1$TimeStamp, summary)
+#$After
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  #0.01698  6.02913  7.63122  7.73442 10.04740 14.03910 
+
+
+#$Before
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  0.01115  7.31493  9.12813  9.26403 11.30389 14.41063 
 ```
 

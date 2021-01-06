@@ -448,6 +448,18 @@ MilburnieDam_Upstream_Q1$Location<-"Upstream"
 
 write.csv(MilburnieDam_Upstream_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Upstream_Q1 _processed.csv"))
 
+#Also dividing further into each specific site
+targetupstream1 <- c("Upstream1")
+MilburnieDam_Upstream1_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetupstream1)
+MilburnieDam_Upstream1_Q1$Location<-"Upstream1"
+write.csv(MilburnieDam_Upstream1_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Upstream1_Q1 _processed.csv"))
+
+targetupstream2 <- c("Upstream2")
+MilburnieDam_Upstream2_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetupstream2)
+MilburnieDam_Upstream2_Q1$Location<-"Upstream2"
+write.csv(MilburnieDam_Upstream2_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Upstream2_Q1 _processed.csv"))
+
+
 
 targetimp1 <- c("Impoundment1", "Impoundment2")
 MilburnieDam_Impoundment_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetimp1)
@@ -455,12 +467,40 @@ MilburnieDam_Impoundment_Q1$Location<-"Impoundment"
 
 write.csv(MilburnieDam_Impoundment_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Impoundment_Q1 _processed.csv"))
 
+#Also dividing further into each specific site
+targetimpoundment1 <- c("Impoundment1")
+MilburnieDam_Impoundment1_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetimpoundment1)
+MilburnieDam_Impoundment1_Q1$Location<-"Impoundment1"
+write.csv(MilburnieDam_Impoundment1_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Impoundment1_Q1 _processed.csv"))
+
+targetimpoundment2 <- c("Impoundment2")
+MilburnieDam_Impoundment2_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetimpoundment2)
+MilburnieDam_Impoundment2_Q1$Location<-"Impoundment2"
+write.csv(MilburnieDam_Impoundment2_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Impoundment2_Q1 _processed.csv"))
+
+
 
 targetdown1 <- c("Downstream1", "Downstream2A", "Downstream2B")
 MilburnieDam_Downstream_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetdown1)
 MilburnieDam_Downstream_Q1$Location<-"Downstream"
 
 write.csv(MilburnieDam_Downstream_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Downstream_Q1 _processed.csv"))
+
+#Also dividing further into each specific site
+targetdownstream1 <- c("Downstream1")
+MilburnieDam_Downstream1_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetdownstream1)
+MilburnieDam_Downstream1_Q1$Location<-"Downstream1"
+write.csv(MilburnieDam_Downstream1_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Downstream1_Q1 _processed.csv"))
+
+targetdownstream2A <- c("Downstream2A")
+MilburnieDam_Downstream2A_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetdownstream2A)
+MilburnieDam_Downstream2A_Q1$Location<-"Downstream2A"
+write.csv(MilburnieDam_Downstream2A_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Downstream2A_Q1 _processed.csv"))
+
+targetdownstream2B <- c("Downstream2B")
+MilburnieDam_Downstream2B_Q1 <- filter(MilburnieDam_AllSitesDO_TimeStampSUBSET, Site %in% targetdownstream2B)
+MilburnieDam_Downstream2B_Q1$Location<-"Downstream2B"
+write.csv(MilburnieDam_Downstream2B_Q1 , row.names = FALSE, file =("./Processed/MilburnieDam_Downstream2B_Q1 _processed.csv"))
 
 ##Now compare before and after dam removal for each site location...
 
@@ -542,6 +582,158 @@ tapply(MilburnieDam_Upstream_Q1$AvgDO, MilburnieDam_Upstream_Q1$TimeStamp, summa
 # 0.0483  6.9214  9.2257  9.3531 11.5272 14.3766 
 
 ```
+
+```{r Each Individual Upstream Sites-Upstream1}
+
+shapiro.test(MilburnieDam_Upstream1_Q1$AvgDO[MilburnieDam_Upstream1_Q1$TimeStamp == "After"])
+#Results:W = 0.91716, p-value = 1.684e-12
+
+shapiro.test(MilburnieDam_Upstream1_Q1$AvgDO[MilburnieDam_Upstream1_Q1$TimeStamp == "Before"])
+#Results:  W = 0.92291, p-value = 1.753e-14
+
+
+var.test(MilburnieDam_Upstream1_Q1$AvgDO ~ MilburnieDam_Upstream1_Q1$TimeStamp)
+#Results F = 1.5, num df = 328, denom df = 452, p-value = 6.76e-05
+#alternative hypothesis: true ratio of variances is not equal to 1
+#95 percent confidence interval:
+# 1.228397 1.837534
+#sample estimates:
+#ratio of variances 
+    #       1.499954 
+
+vartest_Upstream1<-ggplot(MilburnieDam_Upstream1_Q1, aes(x = AvgDO, color = TimeStamp)) + geom_freqpoly()
+vartest_Upstream1
+
+ AvgDO_Q1_Upstream1.twosample <- t.test(MilburnieDam_Upstream1_Q1$AvgDO ~ MilburnieDam_Upstream1_Q1$TimeStamp) 
+AvgDO_Q1_Upstream1.twosample
+#Results:
+#t = -7.2426, df = 617.48, p-value = 1.316e-12
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+ #-1.931336 -1.107392
+#sample estimates:
+# mean in group After mean in group Before 
+  #     7.933505             9.452869 
+
+AvgDO_Q1_Upstream1.twosample$p.value
+#  1.315911e-12
+
+#Format as GLM
+AvgDO_Q1_Upstream1.twosample2 <- lm(MilburnieDam_Upstream1_Q1$AvgDO ~ MilburnieDam_Upstream1_Q1$TimeStamp) 
+summary(AvgDO_Q1_Upstream1.twosample2)
+plot(AvgDO_Q1_Upstream1.twosample2)
+
+
+#Normality is not met Pvalue <0.05
+
+#Wilcoxon Test
+AvgDO_Q1_Upstream1.twosample.wilcox <- wilcox.test(MilburnieDam_Upstream1_Q1$AvgDO ~ MilburnieDam_Upstream1_Q1$TimeStamp) 
+
+AvgDO_Q1_Upstream1.twosample.wilcox
+#Results
+#W = 56810, p-value = 1.358e-08
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  56810)
+
+#Graph this!
+MilburnieDam_AvgDO_Q1_Upstream1_boxplot<-ggplot(MilburnieDam_Upstream1_Q1) +
+geom_boxplot(aes(x = TimeStamp, y = AvgDO), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Average Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ggtitle("Upstream Site 1")
+#+ylim(0,15)
+MilburnieDam_AvgDO_Q1_Upstream1_boxplot
+  
+ggsave("./Outputs/MilburnieDam_AvgDO_Q1_Upstream1_boxplot.jpg", plot=MilburnieDam_AvgDO_Q1_Upstream1_boxplot, width =10, height=6, units="in", dpi=300)
+
+#summary stats
+tapply(MilburnieDam_Upstream1_Q1$AvgDO, MilburnieDam_Upstream1_Q1$TimeStamp, summary)
+#$After
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  #0.000   6.499   8.012   7.934  10.511  12.889 
+
+#$Before
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  5.440   6.932   9.505   9.453  11.692  14.377 
+```
+
+```{r Each Individual Upstream Sites-Upstream2}
+shapiro.test(MilburnieDam_Upstream2_Q1$AvgDO[MilburnieDam_Upstream2_Q1$TimeStamp == "After"])
+#Results:W = 0.97284, p-value = 9.856e-06
+
+shapiro.test(MilburnieDam_Upstream2_Q1$AvgDO[MilburnieDam_Upstream2_Q1$TimeStamp == "Before"])
+#Results:  W = 0.95082, p-value = 8.753e-12
+
+
+var.test(MilburnieDam_Upstream2_Q1$AvgDO ~ MilburnieDam_Upstream2_Q1$TimeStamp)
+#Results F = 0.76507, num df = 319, denom df = 495, p-value = 0.009334
+#alternative hypothesis: true ratio of variances is not equal to 1
+#95 percent confidence interval:
+#  0.6281806 0.9358500
+#sample estimates:
+#ratio of variances 
+    #       0.7650687 
+
+vartest_Upstream2<-ggplot(MilburnieDam_Upstream2_Q1, aes(x = AvgDO, color = TimeStamp)) + geom_freqpoly()
+vartest_Upstream2
+
+ AvgDO_Q1_Upstream2.twosample <- t.test(MilburnieDam_Upstream2_Q1$AvgDO ~ MilburnieDam_Upstream2_Q1$TimeStamp) 
+AvgDO_Q1_Upstream2.twosample
+#Results:
+#t = -3.9953, df = 743.24, p-value = 7.105e-05
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+ #-1.0209521 -0.3481934
+#sample estimates:
+# mean in group After mean in group Before 
+  #  8.577340             9.261912 
+
+AvgDO_Q1_Upstream2.twosample$p.value
+#   7.10533e-05
+
+#Format as GLM
+AvgDO_Q1_Upstream2.twosample2 <- lm(MilburnieDam_Upstream2_Q1$AvgDO ~ MilburnieDam_Upstream2_Q1$TimeStamp) 
+summary(AvgDO_Q1_Upstream2.twosample2)
+plot(AvgDO_Q1_Upstream2.twosample2)
+
+
+#Normality is not met Pvalue <0.05
+
+#Wilcoxon Test
+AvgDO_Q1_Upstream2.twosample.wilcox <- wilcox.test(MilburnieDam_Upstream2_Q1$AvgDO ~ MilburnieDam_Upstream2_Q1$TimeStamp) 
+
+AvgDO_Q1_Upstream2.twosample.wilcox
+#Results
+#W = 66881, p-value = 0.000147
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  66881)
+
+#Graph this!
+MilburnieDam_AvgDO_Q1_Upstream2_boxplot<-ggplot(MilburnieDam_Upstream2_Q1) +
+geom_boxplot(aes(x = TimeStamp, y = AvgDO), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Average Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ggtitle("Upstream Site 2")
+#+ylim(0,15)
+MilburnieDam_AvgDO_Q1_Upstream2_boxplot
+  
+ggsave("./Outputs/MilburnieDam_AvgDO_Q1_Upstream2_boxplot.jpg", plot=MilburnieDam_AvgDO_Q1_Upstream2_boxplot, width =10, height=6, units="in", dpi=300)
+
+#summary stats
+tapply(MilburnieDam_Upstream2_Q1$AvgDO, MilburnieDam_Upstream2_Q1$TimeStamp, summary)
+#$After
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  #  2.726   6.602   8.306   8.577  10.458  13.276 
+
+#$Before
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.0483  6.9072  8.9556  9.2619 11.3955 14.2366 
+```
+
 
 ```{r Impoundment Sites}
 shapiro.test(MilburnieDam_Impoundment_Q1$AvgDO[MilburnieDam_Impoundment_Q1$TimeStamp == "After"])
@@ -693,5 +885,9 @@ tapply(MilburnieDam_Downstream_Q1$AvgDO, MilburnieDam_Downstream_Q1$TimeStamp, s
 #$Before
   # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 #  0.01115  7.31493  9.12813  9.26403 11.30389 14.41063 
+```
+
+```{r Each Individual Upstream Sites-Downstream1}
+
 ```
 

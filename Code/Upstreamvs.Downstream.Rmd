@@ -234,3 +234,22 @@ tapply(MilburnieDam_Q2_AfterUpvsDown$AvgDO, MilburnieDam_Q2_AfterUpvsDown$Locati
 
 ```
 
+```{r Now using All DO not just Avg}
+Upstream1_AllDO<-read_csv("./Processed/MilburnieDam_Upstream1_AllDO_processed.csv")
+Upstream2_AllDO<- read_csv("./Processed/MilburnieDam_Upstream2_AllDO_processed.csv")
+Impoundment1_AllDO<-read_csv("./Processed/MilburnieDam_Impoundment1_AllDO_processed.csv")
+Downstream1_AllDO<-read_csv("./Processed/MilburnieDam_Downstream1_AllDO_processed.csv")
+Downstream2A_AllDO<-read_csv("./Processed/MilburnieDam_Downstream2A_AllDO_processed.csv")
+Downstream2B_AllDO<-read_csv("./Processed/MilburnieDam_Downstream2B_AllDO_processed.csv")
+
+Upstreams <- full_join(Upstream1_AllDO, Upstream2_AllDO)
+UpstreamSites_AllDO<-full_join(Upstreams, Impoundment1_AllDO)
+write.csv(UpstreamSites_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam_Q2_UpstreamSites_AllDO_processed.csv"))
+
+Downstreams <- full_join(Downstream1_AllDO, Downstream2A_AllDO)
+DownstreamSites_AllDO<-full_join(Downstreams, Downstream2B_AllDO)
+write.csv(DownstreamSites_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam_Q2_DownstreamSites_AllDO_processed.csv"))
+
+
+```
+

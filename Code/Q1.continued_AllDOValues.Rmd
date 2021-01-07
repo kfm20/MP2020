@@ -70,6 +70,7 @@ Upstream2_AllValues_After$TimeStamp<-"After"
 Upstream2_AllValues_Before$TimeStamp<-"Before"
 Upstream2_AllValues_TimeStamp<- full_join(Upstream2_AllValues_After, Upstream2_AllValues_Before)
 
+class(Impoundment1_AllDO$Date)
 Impoundment1_AllValues_Before <- Impoundment1_AllValues %>% filter(Date < as.Date("2017-09-21"))
 Impoundment1_AllValues_After <- Impoundment1_AllValues %>% filter(Date > as.Date("2017-09-21"))
 Impoundment1_AllValues_After$TimeStamp<-"After"
@@ -119,5 +120,229 @@ write.csv(Downstream1_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam
 write.csv(Downstream2A_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam_Downstream2A_AllDO_processed.csv"))
 write.csv(Downstream2B_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam_Downstream2B_AllDO_processed.csv"))
 
+```
+
+```{r Q1 Re Using All Values- Upstream 1}
+
+##Too many data points for a Shapiro test, way more than 5000
+#Can we just skip normality test and assume it is not met??
+
+#Wilcoxon Test
+AllDO_Q1_Upstream1.twosample.wilcox <- wilcox.test(Upstream1_AllDO$`Dissolved Oxygen` ~ Upstream1_AllDO$TimeStamp) 
+
+AllDO_Q1_Upstream1.twosample.wilcox
+#Results
+#W = 598854308, p-value < 2.2e-16
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  598854308)
+
+#Graph this!
+MilburnieDam_AllDO_Q1_Upstream1_boxplot<-ggplot(Upstream1_AllDO) +
+geom_boxplot(aes(x = Upstream1_AllDO$TimeStamp, y = Upstream1_AllDO$'Dissolved Oxygen'), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ggtitle("Upstream Site 1")
+
+MilburnieDam_AllDO_Q1_Upstream1_boxplot
+  
+ggsave("./Outputs/MilburnieDam_AllDO_Q1_Upstream1_boxplot.jpg", plot=MilburnieDam_AllDO_Q1_Upstream1_boxplot, width =10, height=6, units="in", dpi=300)
+
+#summary stats
+tapply(Upstream1_AllDO$'Dissolved Oxygen', Upstream1_AllDO$TimeStamp, summary)
+#$After
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#0.000   6.217   7.667   7.405   9.930  13.467 
+
+#$Before
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  0.000   6.967   9.583   9.421  11.667  14.580 
+
+```
+
+```{r Upstream 2}
+##Too many data points for a Shapiro test, way more than 5000
+#Can we just skip normality test and assume it is not met??
+
+#Wilcoxon Test
+AllDO_Q1_Upstream2.twosample.wilcox <- wilcox.test(Upstream2_AllDO$`Dissolved Oxygen` ~ Upstream2_AllDO$TimeStamp) 
+
+AllDO_Q1_Upstream2.twosample.wilcox
+#Results
+#W = 669044063, p-value < 2.2e-16
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  669044063)
+
+#Graph this!
+MilburnieDam_AllDO_Q1_Upstream2_boxplot<-ggplot(Upstream2_AllDO) +
+geom_boxplot(aes(x = Upstream2_AllDO$TimeStamp, y = Upstream2_AllDO$'Dissolved Oxygen'), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ggtitle("Upstream Site 2")
+
+MilburnieDam_AllDO_Q1_Upstream2_boxplot
+  
+ggsave("./Outputs/MilburnieDam_AllDO_Q1_Upstream2_boxplot.jpg", plot=MilburnieDam_AllDO_Q1_Upstream2_boxplot, width =10, height=6, units="in", dpi=300)
+
+#summary stats
+tapply(Upstream2_AllDO$'Dissolved Oxygen', Upstream2_AllDO$TimeStamp, summary)
+#$After
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#0.700   6.283   7.843   8.153  10.040  13.557 
+
+#$Before
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  0.000   6.993   8.953   9.276  11.470  14.567 
+```
+
+```{r Impoundment}
+##Too many data points for a Shapiro test, way more than 5000
+#Can we just skip normality test and assume it is not met??
+
+#Wilcoxon Test
+AllDO_Q1_Impoundment1.twosample.wilcox <- wilcox.test(Impoundment1_AllDO$`Dissolved Oxygen` ~ Impoundment1_AllDO$TimeStamp) 
+
+AllDO_Q1_Impoundment1.twosample.wilcox
+#Results
+#W = 605923100, p-value < 2.2e-16
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  605923100)
+
+#Graph this!
+MilburnieDam_AllDO_Q1_Impoundment1_boxplot<-ggplot(Impoundment1_AllDO) +
+geom_boxplot(aes(x = Impoundment1_AllDO$TimeStamp, y = Impoundment1_AllDO$'Dissolved Oxygen'), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ggtitle("Impoundment Site 1")
+
+MilburnieDam_AllDO_Q1_Impoundment1_boxplot
+  
+ggsave("./Outputs/MilburnieDam_AllDO_Q1_Impoundment1_boxplot.jpg", plot=MilburnieDam_AllDO_Q1_Impoundment1_boxplot, width =10, height=6, units="in", dpi=300)
+
+#summary stats
+tapply(Impoundment1_AllDO$'Dissolved Oxygen', Impoundment1_AllDO$TimeStamp, summary)
+#$After
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.010   6.180   7.297   7.694   9.987  13.510 
+
+#$Before
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#    0.000   6.390   8.303   8.494  11.097  14.593 
+```
+
+```{r Downstream 1}
+##Too many data points for a Shapiro test, way more than 5000
+#Can we just skip normality test and assume it is not met??
+
+#Wilcoxon Test
+AllDO_Q1_Downstream1.twosample.wilcox <- wilcox.test(Downstream1_AllDO$`Dissolved Oxygen` ~ Downstream1_AllDO$TimeStamp) 
+
+AllDO_Q1_Downstream1.twosample.wilcox
+#Results
+#W = 488055913, p-value < 2.2e-16
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  488055913)
+
+#Graph this!
+MilburnieDam_AllDO_Q1_Downstream1_boxplot<-ggplot(Downstream1_AllDO) +
+geom_boxplot(aes(x = Downstream1_AllDO$TimeStamp, y = Downstream1_AllDO$'Dissolved Oxygen'), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ggtitle("Downstream Site 1")
+
+MilburnieDam_AllDO_Q1_Downstream1_boxplot
+  
+ggsave("./Outputs/MilburnieDam_AllDO_Q1_Downstream1_boxplot.jpg", plot=MilburnieDam_AllDO_Q1_Downstream1_boxplot, width =10, height=6, units="in", dpi=300)
+
+#summary stats
+tapply(Downstream1_AllDO$'Dissolved Oxygen', Downstream1_AllDO$TimeStamp, summary)
+#$After
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#   0.000   6.960   9.060   8.476  10.423  13.260 
+
+#$Before
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#    0.000   7.603   9.300   9.402  11.470  14.320 
+```
+
+```{r Downstream 2A}
+##Too many data points for a Shapiro test, way more than 5000
+#Can we just skip normality test and assume it is not met??
+
+#Wilcoxon Test
+AllDO_Q1_Downstream2A.twosample.wilcox <- wilcox.test(Downstream2A_AllDO$`Dissolved Oxygen` ~ Downstream2A_AllDO$TimeStamp) 
+
+AllDO_Q1_Downstream2A.twosample.wilcox
+#Results
+#W = 396568151, p-value < 2.2e-16
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  396568151)
+
+#Graph this!
+MilburnieDam_AllDO_Q1_Downstream2A_boxplot<-ggplot(Downstream2A_AllDO) +
+geom_boxplot(aes(x = Downstream2A_AllDO$TimeStamp, y = Downstream2A_AllDO$'Dissolved Oxygen'), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ggtitle("Downstream Site 2A")
+
+MilburnieDam_AllDO_Q1_Downstream2A_boxplot
+  
+ggsave("./Outputs/MilburnieDam_AllDO_Q1_Downstream2A_boxplot.jpg", plot=MilburnieDam_AllDO_Q1_Downstream2A_boxplot, width =10, height=6, units="in", dpi=300)
+
+#summary stats
+tapply(Downstream2A_AllDO$'Dissolved Oxygen', Downstream2A_AllDO$TimeStamp, summary)
+#$After
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#   0.000   5.646   7.460   7.714  10.050  14.247 
+
+#$Before
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#    4.307   7.037   8.433   8.960  11.027  14.310 
+```
+
+```{r Downstream 2B}
+##Too many data points for a Shapiro test, way more than 5000
+#Can we just skip normality test and assume it is not met??
+
+#Wilcoxon Test
+AllDO_Q1_Downstream2B.twosample.wilcox <- wilcox.test(Downstream2B_AllDO$`Dissolved Oxygen` ~ Downstream2B_AllDO$TimeStamp) 
+
+AllDO_Q1_Downstream2B.twosample.wilcox
+#Results
+#W = 470690430, p-value < 2.2e-16
+#alternative hypothesis: true location shift is not equal to 0
+
+#Interpretation.... significant difference in Avg daily DO during and after the dam removal(p value<0.0001, Wilcoxon test, W=  470690430)
+
+#Graph this!
+MilburnieDam_AllDO_Q1_Downstream2B_boxplot<-ggplot(Downstream2B_AllDO) +
+geom_boxplot(aes(x = Downstream2B_AllDO$TimeStamp, y = Downstream2B_AllDO$'Dissolved Oxygen'), color="skyblue4", alpha=0.75)+
+  xlab("Timeframe in the Dam \nRemoval Process")+
+  ylab("Dissolved \nOxygen (mgL)")+
+  mytheme+
+  ggtitle("Downstream Site 2B")
+
+MilburnieDam_AllDO_Q1_Downstream2B_boxplot
+  
+ggsave("./Outputs/MilburnieDam_AllDO_Q1_Downstream2B_boxplot.jpg", plot=MilburnieDam_AllDO_Q1_Downstream2B_boxplot, width =10, height=6, units="in", dpi=300)
+
+#summary stats
+tapply(Downstream2B_AllDO$'Dissolved Oxygen', Downstream2B_AllDO$TimeStamp, summary)
+#$After
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#   0.000   5.997   7.093   7.317   9.183  13.630 
+
+#$Before
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#   0.4467  7.3133  9.5233  9.4048 11.3100 14.6333 
 ```
 

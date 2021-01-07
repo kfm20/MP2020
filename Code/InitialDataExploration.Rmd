@@ -1029,7 +1029,7 @@ geom_boxplot(aes(x = TimeStamp, y = AvgDO), color="skyblue4", alpha=0.75)+
 #+ylim(0,15)
 MilburnieDam_AvgDO_Q1_Downstream2A_boxplot
   
-ggsave("./Outputs/MilburnieDam_AvgDO_Q1_Downstream1_boxplot.jpg", plot=MilburnieDam_AvgDO_Q1_Downstream2A_boxplot, width =10, height=6, units="in", dpi=300)
+ggsave("./Outputs/MilburnieDam_AvgDO_Q1_Downstream2A_boxplot.jpg", plot=MilburnieDam_AvgDO_Q1_Downstream2A_boxplot, width =10, height=6, units="in", dpi=300)
 
 #summary stats
 tapply(MilburnieDam_Downstream2A_Q1$AvgDO, MilburnieDam_Downstream2A_Q1$TimeStamp, summary)
@@ -1105,7 +1105,7 @@ geom_boxplot(aes(x = TimeStamp, y = AvgDO), color="skyblue4", alpha=0.75)+
 #+ylim(0,15)
 MilburnieDam_AvgDO_Q1_Downstream2B_boxplot
   
-ggsave("./Outputs/MilburnieDam_AvgDO_Q1_Downstream1_boxplot.jpg", plot=MilburnieDam_AvgDO_Q1_Downstream2B_boxplot, width =10, height=6, units="in", dpi=300)
+ggsave("./Outputs/MilburnieDam_AvgDO_Q1_Downstream2B_boxplot.jpg", plot=MilburnieDam_AvgDO_Q1_Downstream2B_boxplot, width =10, height=6, units="in", dpi=300)
 
 #summary stats
 tapply(MilburnieDam_Downstream2B_Q1$AvgDO, MilburnieDam_Downstream2B_Q1$TimeStamp, summary)

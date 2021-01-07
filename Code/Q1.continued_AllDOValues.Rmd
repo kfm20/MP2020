@@ -1,0 +1,123 @@
+---
+title: "Q1_AllDOValues"
+author: "Kathleen Mason"
+date: "1/7/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r}
+library(tidyverse)
+library(ggridges)
+library(dplyr)
+
+getwd()
+
+mytheme <- theme_light(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
+
+Up1_processed<-read_csv("./Processed/Up1_processed.csv")
+Up2_processed<-read_csv("./Processed/Up2_processed.csv")
+Imp1_processed<-read_csv("./Processed/Imp1_processed.csv")
+Imp2_processed<-read_csv("./Processed/Imp2_processed.csv")
+Down1_processed<-read_csv("./Processed/Down1_processed.csv")
+Down2A_processed<-read_csv("./Processed/Down2A_processed.csv")
+Down2B_processed<-read_csv("./Processed/Down2B_processed.csv")
+
+class(Up1_processed$Date)
+
+colnames(Up1_processed)[4] <- "Dissolved Oxygen"
+summary(Up1_processed$`Dissolved Oxygen`)
+colnames(Imp1_processed)[5] <- "Dissolved Oxygen"
+summary(Imp1_processed$`Dissolved Oxygen`)
+
+colnames(Up2_processed)[4]<-"Dissolved Oxygen"
+colnames(Imp2_processed)[6]<-"Dissolved Oxygen"
+
+colnames(Down1_processed)[6]<-"Dissolved Oxygen"
+colnames(Down2A_processed)[4]<-"Dissolved Oxygen"
+colnames(Down2B_processed)[4]<-"Dissolved Oxygen"
+
+#I need to select only date, time, site location and DO, then eliminate outliers- so set range of DO from 0-15, and set a before and after dam removal time stamp...then save these data sets to be used again.
+
+#selecting date, time, site location, and DO
+
+Upstream1_AllValues <- select(Up1_processed, 1:4)
+Upstream2_AllValues <- select(Up2_processed, 1:4)
+Impoundment1_AllValues <- select(Imp1_processed, 1:3, 5)
+Downstream1_AllValues <- select(Down1_processed, 1:3, 6)
+Downstream2A_AllValues <- select(Down2A_processed, 1:4)
+Downstream2B_AllValues <- select(Down2B_processed, 1:4)
+
+
+
+```
+
+```{r Setting before and after timestamp and setting range 0-15}
+
+Upstream1_AllValues_Before <- Upstream1_AllValues %>% filter(Date < as.Date("2017-09-21"))
+Upstream1_AllValues_After <- Upstream1_AllValues %>% filter(Date > as.Date("2017-09-21"))
+Upstream1_AllValues_After$TimeStamp<-"After"
+Upstream1_AllValues_Before$TimeStamp<-"Before"
+Upstream1_AllValues_TimeStamp<- full_join(Upstream1_AllValues_After, Upstream1_AllValues_Before)
+
+
+Upstream2_AllValues_Before <- Upstream2_AllValues %>% filter(Date < as.Date("2017-09-21"))
+Upstream2_AllValues_After <- Upstream2_AllValues %>% filter(Date > as.Date("2017-09-21"))
+Upstream2_AllValues_After$TimeStamp<-"After"
+Upstream2_AllValues_Before$TimeStamp<-"Before"
+Upstream2_AllValues_TimeStamp<- full_join(Upstream2_AllValues_After, Upstream2_AllValues_Before)
+
+Impoundment1_AllValues_Before <- Impoundment1_AllValues %>% filter(Date < as.Date("2017-09-21"))
+Impoundment1_AllValues_After <- Impoundment1_AllValues %>% filter(Date > as.Date("2017-09-21"))
+Impoundment1_AllValues_After$TimeStamp<-"After"
+Impoundment1_AllValues_Before$TimeStamp<-"Before"
+Impoundment1_AllValues_TimeStamp<- full_join(Impoundment1_AllValues_After, Impoundment1_AllValues_Before)
+
+Downstream1_AllValues_Before <- Downstream1_AllValues %>% filter(Date < as.Date("2017-09-21"))
+Downstream1_AllValues_After <- Downstream1_AllValues %>% filter(Date > as.Date("2017-09-21"))
+Downstream1_AllValues_After$TimeStamp<-"After"
+Downstream1_AllValues_Before$TimeStamp<-"Before"
+Downstream1_AllValues_TimeStamp<- full_join(Downstream1_AllValues_After, Downstream1_AllValues_Before)
+
+Downstream2A_AllValues_Before <- Downstream2A_AllValues %>% filter(Date < as.Date("2017-09-21"))
+Downstream2A_AllValues_After <- Downstream2A_AllValues %>% filter(Date > as.Date("2017-09-21"))
+Downstream2A_AllValues_After$TimeStamp<-"After"
+Downstream2A_AllValues_Before$TimeStamp<-"Before"
+Downstream2A_AllValues_TimeStamp<- full_join(Downstream2A_AllValues_After, Downstream2A_AllValues_Before)
+
+Downstream2B_AllValues_Before <- Downstream2B_AllValues %>% filter(Date < as.Date("2017-09-21"))
+Downstream2B_AllValues_After <- Downstream2B_AllValues %>% filter(Date > as.Date("2017-09-21"))
+Downstream2B_AllValues_After$TimeStamp<-"After"
+Downstream2B_AllValues_Before$TimeStamp<-"Before"
+Downstream2B_AllValues_TimeStamp<- full_join(Downstream2B_AllValues_After, Downstream2B_AllValues_Before)
+
+
+#Select range of data
+#subset(df, date>4 & date<6)
+#df[df$date>4 & df$date<6, ]
+Upstream1_AllDO <- Upstream1_AllValues_TimeStamp[Upstream1_AllValues_TimeStamp$`Dissolved Oxygen`>= 0 & Upstream1_AllValues_TimeStamp$`Dissolved Oxygen`<= 15 , ]
+summary(Upstream1_AllDO$`Dissolved Oxygen`)
+
+Upstream2_AllDO <- Upstream2_AllValues_TimeStamp[Upstream2_AllValues_TimeStamp$`Dissolved Oxygen`>= 0 & Upstream2_AllValues_TimeStamp$`Dissolved Oxygen`<= 15 , ]
+
+Impoundment1_AllDO <- Impoundment1_AllValues_TimeStamp[Impoundment1_AllValues_TimeStamp$`Dissolved Oxygen`>= 0 & Impoundment1_AllValues_TimeStamp$`Dissolved Oxygen`<= 15 , ]
+
+Downstream1_AllDO <- Downstream1_AllValues_TimeStamp[Downstream1_AllValues_TimeStamp$`Dissolved Oxygen`>= 0 & Downstream1_AllValues_TimeStamp$`Dissolved Oxygen`<= 15 , ]
+
+Downstream2A_AllDO <- Downstream2A_AllValues_TimeStamp[Downstream2A_AllValues_TimeStamp$`Dissolved Oxygen`>= 0 & Downstream2A_AllValues_TimeStamp$`Dissolved Oxygen`<= 15 , ]
+
+Downstream2B_AllDO <- Downstream2B_AllValues_TimeStamp[Downstream2B_AllValues_TimeStamp$`Dissolved Oxygen`>= 0 & Downstream2B_AllValues_TimeStamp$`Dissolved Oxygen`<= 15 , ]
+summary(Downstream2B_AllDO$`Dissolved Oxygen`)
+
+write.csv(Upstream1_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam_Upstream1_AllDO_processed.csv"))
+write.csv(Upstream2_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam_Upstream2_AllDO_processed.csv"))
+write.csv(Impoundment1_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam_Impoundment1_AllDO_processed.csv"))
+write.csv(Downstream1_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam_Downstream1_AllDO_processed.csv"))
+write.csv(Downstream2A_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam_Downstream2A_AllDO_processed.csv"))
+write.csv(Downstream2B_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam_Downstream2B_AllDO_processed.csv"))
+
+```
+

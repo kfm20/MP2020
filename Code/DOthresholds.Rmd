@@ -10,21 +10,157 @@ editor_options:
 ```{r Setup}
 library(tidyverse)
 library(ggridges)
+library(dplyr)
 
 
 getwd()
-setwd("~/Documents/DUKE/MP/Data Analysis/MP2020")
 
 
-Up1AvgDO<-read_csv("./Processed/Up1AvgDO_processed.csv")
-Up2AvgDO<-read_csv("./Processed/Up2AvgDO_processed.csv")
-Imp1AvgDO<-read_csv("./Processed/Imp1AvgDO_processed.csv")
-Imp2AvgDO<-read_csv("./Processed/Imp2AvgDO_processed.csv")
-Down1AvgDO<-read_csv("./Processed/Down1AvgDO_processed.csv")
-Down2AAvgDO<-read_csv("./Processed/Down2AAvgDO_processed.csv")
-Down2BAvgDO<-read_csv("./Processed/Down2BAvgDO_processed.csv")
+Upstream1_AllDO<-read.csv("./Processed/MilburnieDam_Upstream1_AllDO_processed.csv")
+Upstream2_AllDO<- read.csv("./Processed/MilburnieDam_Upstream2_AllDO_processed.csv")
+Impoundment1_AllDO<-read.csv("./Processed/MilburnieDam_Impoundment1_AllDO_processed.csv")
+Downstream1_AllDO<-read.csv("./Processed/MilburnieDam_Downstream1_AllDO_processed.csv")
+Downstream2A_AllDO<-read.csv("./Processed/MilburnieDam_Downstream2A_AllDO_processed.csv")
+Downstream2B_AllDO<-read.csv("./Processed/MilburnieDam_Downstream2B_AllDO_processed.csv")
 
-class(Up1AvgDO_processed$Date)
+class(Upstream1_AllDO$Dissolved.Oxygen)
+
+```
+
+```{r}
+#newdata <- mydata[ which(mydata$gender=='F' 
+#& mydata$age > 65), ]
+
+Upstream1_Threshold4<- Upstream1_AllDO[which(Upstream1_AllDO$Dissolved.Oxygen <= 4),]
+Upstream1_Threshold6<- Upstream1_AllDO[which(Upstream1_AllDO$Dissolved.Oxygen <= 6),]
+#92603 observations
+#Threshold 4: 5468
+#Threshold 6: 11136
+
+Upstream2_AllDO1_Threshold4<- Upstream2_AllDO[which(Upstream2_AllDO$Dissolved.Oxygen <= 4),]
+Upstream2_AllDO1_Threshold6<- Upstream2_AllDO[which(Upstream2_AllDO$Dissolved.Oxygen <= 6),]
+#97430 observations
+#Threshold 4: 1289
+#Threshold 6: 9803
+
+Impoundment1_AllDO1_Threshold4<- Impoundment1_AllDO[which(Impoundment1_AllDO$Dissolved.Oxygen <= 4),]
+Impoundment1_AllDO1_Threshold6<- Impoundment1_AllDO[which(Impoundment1_AllDO$Dissolved.Oxygen <= 6),]
+#92823 observations
+#Threshold 4: 5388
+#Threshold 6: 14653
+
+Downstream1_Threshold4<- Downstream1_AllDO[which(Downstream1_AllDO$Dissolved.Oxygen <= 4),]
+Downstream1_Threshold6<- Downstream1_AllDO[which(Downstream1_AllDO$Dissolved.Oxygen <= 6),]
+#86807 observations
+#Threshold 4: 3027
+#Threshold 6: 5264
+
+Downstream2A_Threshold4<- Downstream2A_AllDO[which(Downstream2A_AllDO$Dissolved.Oxygen <= 4),]
+Downstream2A_Threshold6<- Downstream2A_AllDO[which(Downstream2A_AllDO$Dissolved.Oxygen <= 6),]
+#78363 observations
+#Threshold 4: 2153
+#Threshold 6: 12744
+
+Downstream2B_Threshold4<- Downstream2B_AllDO[which(Downstream2B_AllDO$Dissolved.Oxygen <= 4),]
+Downstream2B_Threshold6<- Downstream2B_AllDO[which(Downstream2B_AllDO$Dissolved.Oxygen <= 6),]
+#96055 observations
+#Threshold 4: 3259
+#Threshold 6: 10548
+```
+
+```{r Save Threshold Datasets}
+write.csv(Upstream1_Threshold4, row.names = FALSE, file =("./Processed/MilburnieDam_Upstream1_Threshold4_processed.csv"))
+write.csv(Upstream1_Threshold6, row.names = FALSE, file =("./Processed/MilburnieDam_Upstream1_Threshold6_processed.csv"))
+
+write.csv(Upstream2_Threshold4, row.names = FALSE, file =("./Processed/MilburnieDam_Upstream2_Threshold4_processed.csv"))
+write.csv(Upstream2_Threshold6, row.names = FALSE, file =("./Processed/MilburnieDam_Upstream2_Threshold6_processed.csv"))
+
+write.csv(Impoundment1_Threshold4, row.names = FALSE, file =("./Processed/MilburnieDam_Impoundment1_Threshold4_processed.csv"))
+write.csv(Impoundment1_Threshold6, row.names = FALSE, file =("./Processed/MilburnieDam_Impoundment1_Threshold6_processed.csv"))
+
+write.csv(Downstream1_Threshold4, row.names = FALSE, file =("./Processed/MilburnieDam_Downstream1_Threshold4_processed.csv"))
+write.csv(Downstream1_Threshold6, row.names = FALSE, file =("./Processed/MilburnieDam_Downstream1_Threshold6_processed.csv"))
+
+write.csv(Downstream2A_Threshold4, row.names = FALSE, file =("./Processed/MilburnieDam_Downstream2A_Threshold4_processed.csv"))
+write.csv(Downstream2A_Threshold6, row.names = FALSE, file =("./Processed/MilburnieDam_Downstream2A_Threshold6_processed.csv"))
+
+write.csv(Downstream2B_Threshold4, row.names = FALSE, file =("./Processed/MilburnieDam_Downstream2B_Threshold4_processed.csv"))
+write.csv(Downstream2B_Threshold6, row.names = FALSE, file =("./Processed/MilburnieDam_Downstream2B_Threshold6_processed.csv"))
+```
+
+```{r Before vs After Dam Removal Comparison of Thresholds}
+#newdata <- mydata[ which(mydata$gender=='F' 
+#& mydata$age > 65), ]
+
+Upstream1_Before.Threshold4<- Upstream1_AllDO[which(Upstream1_AllDO$TimeStamp=='Before' & Upstream1_AllDO$Dissolved.Oxygen <= 4),]
+Upstream1_After.Threshold4<- Upstream1_AllDO[which(Upstream1_AllDO$TimeStamp=='After' & Upstream1_AllDO$Dissolved.Oxygen <= 4),]
+#Before: 192
+#After: 5276
+
+Upstream1_Before.Threshold6<- Upstream1_AllDO[which(Upstream1_AllDO$TimeStamp=='Before' & Upstream1_AllDO$Dissolved.Oxygen <= 6),]
+Upstream1_After.Threshold6<- Upstream1_AllDO[which(Upstream1_AllDO$TimeStamp=='After' & Upstream1_AllDO$Dissolved.Oxygen <= 6),]
+#Before: 3160
+#After: 7976
+
+
+
+Upstream2_Before.Threshold4<- Upstream2_AllDO[which(Upstream2_AllDO$TimeStamp=='Before' & Upstream2_AllDO$Dissolved.Oxygen <= 4),]
+Upstream2_After.Threshold4<- Upstream2_AllDO[which(Upstream2_AllDO$TimeStamp=='After' & Upstream2_AllDO$Dissolved.Oxygen <= 4),]
+#Before: 513
+#After: 776
+
+Upstream2_Before.Threshold6<- Upstream2_AllDO[which(Upstream2_AllDO$TimeStamp=='Before' & Upstream2_AllDO$Dissolved.Oxygen <= 6),]
+Upstream2_After.Threshold6<- Upstream2_AllDO[which(Upstream2_AllDO$TimeStamp=='After' & Upstream2_AllDO$Dissolved.Oxygen <= 6),]
+#Before: 2619
+#After: 7184
+
+
+
+Impoundment1_Before.Threshold4<- Impoundment1_AllDO[which(Impoundment1_AllDO$TimeStamp=='Before' & Impoundment1_AllDO$Dissolved.Oxygen <= 4),]
+Impoundment1_After.Threshold4<- Impoundment1_AllDO[which(Impoundment1_AllDO$TimeStamp=='After' & Impoundment1_AllDO$Dissolved.Oxygen <= 4),]
+#Before: 2492
+#After: 2896
+
+Impoundment1_Before.Threshold6<- Impoundment1_AllDO[which(Impoundment1_AllDO$TimeStamp=='Before' & Impoundment1_AllDO$Dissolved.Oxygen <= 6),]
+Impoundment1_After.Threshold6<- Impoundment1_AllDO[which(Impoundment1_AllDO$TimeStamp=='After' & Impoundment1_AllDO$Dissolved.Oxygen <= 6),]
+#Before: 7094
+#After: 7559
+
+
+
+Downstream1_Before.Threshold4<- Downstream1_AllDO[which(Downstream1_AllDO$TimeStamp=='Before' & Downstream1_AllDO$Dissolved.Oxygen <= 4),]
+Downstream1_After.Threshold4<- Downstream1_AllDO[which(Downstream1_AllDO$TimeStamp=='After' & Downstream1_AllDO$Dissolved.Oxygen <= 4),]
+#Before: 1292
+#After: 1735
+
+Downstream1_Before.Threshold6<- Downstream1_AllDO[which(Downstream1_AllDO$TimeStamp=='Before' & Downstream1_AllDO$Dissolved.Oxygen <= 6),]
+Downstream1_After.Threshold6<- Downstream1_AllDO[which(Downstream1_AllDO$TimeStamp=='After' & Downstream1_AllDO$Dissolved.Oxygen <= 6),]
+#Before: 2227
+#After: 3037
+
+
+
+Downstream2A_Before.Threshold4<- Downstream2A_AllDO[which(Downstream2A_AllDO$TimeStamp=='Before' & Downstream2A_AllDO$Dissolved.Oxygen <= 4),]
+Downstream2A_After.Threshold4<- Downstream2A_AllDO[which(Downstream2A_AllDO$TimeStamp=='After' & Downstream2A_AllDO$Dissolved.Oxygen <= 4),]
+#Before: 0
+#After: 2153
+
+Downstream2A_Before.Threshold6<- Downstream2A_AllDO[which(Downstream2A_AllDO$TimeStamp=='Before' & Downstream2A_AllDO$Dissolved.Oxygen <= 6),]
+Downstream2A_After.Threshold6<- Downstream2A_AllDO[which(Downstream2A_AllDO$TimeStamp=='After' & Downstream2A_AllDO$Dissolved.Oxygen <= 6),]
+#Before: 1367
+#After: 11377
+
+
+
+Downstream2B_Before.Threshold4<- Downstream2B_AllDO[which(Downstream2B_AllDO$TimeStamp=='Before' & Downstream2B_AllDO$Dissolved.Oxygen <= 4),]
+Downstream2B_After.Threshold4<- Downstream2B_AllDO[which(Downstream2B_AllDO$TimeStamp=='After' & Downstream2B_AllDO$Dissolved.Oxygen <= 4),]
+#Before:291
+#After: 2968
+
+Downstream2B_Before.Threshold6<- Downstream2B_AllDO[which(Downstream2B_AllDO$TimeStamp=='Before' & Downstream2B_AllDO$Dissolved.Oxygen <= 6),]
+Downstream2B_After.Threshold6<- Downstream2B_AllDO[which(Downstream2B_AllDO$TimeStamp=='After' & Downstream2B_AllDO$Dissolved.Oxygen <= 6),]
+#Before:2019
+#After: 8529
 
 ```
 

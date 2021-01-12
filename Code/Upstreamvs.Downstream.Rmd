@@ -250,6 +250,18 @@ Downstreams <- full_join(Downstream1_AllDO, Downstream2A_AllDO)
 DownstreamSites_AllDO<-full_join(Downstreams, Downstream2B_AllDO)
 write.csv(DownstreamSites_AllDO, row.names = FALSE, file =("./Processed/MilburnieDam_Q2_DownstreamSites_AllDO_processed.csv"))
 
+#Now separate into before and after
+
+#Dividing the data set in two: before and after. The date for removal of the dam will be used as dividing factor
+MilburnieDam_AllSitesDO_Before <- MilburnieDam_AllSitesDO %>% filter(Date < as.Date("2017-09-21"))
+
+MilburnieDam_AllSitesDO_After <- MilburnieDam_AllSitesDO %>% filter(Date > as.Date("2017-09-21"))
+
+
+MilburnieDam_AllSitesDO_After$TimeStamp<-"After"
+MilburnieDam_AllSitesDO_Before$TimeStamp<-"Before"
+
+MilburnieDam_AllSitesDO_TimeStamp<- full_join(MilburnieDam_AllSitesDO_After, MilburnieDam_AllSitesDO_Before)
 
 ```
 

@@ -92,6 +92,11 @@ write.csv(Downstream2B_Threshold6, row.names = FALSE, file =("./Processed/Milbur
 #newdata <- mydata[ which(mydata$gender=='F' 
 #& mydata$age > 65), ]
 
+Upstream1_Before.All<- Upstream1_AllDO[which(Upstream1_AllDO$TimeStamp=='Before') ,]
+#45812
+Upstream1_After.All<- Upstream1_AllDO[which(Upstream1_AllDO$TimeStamp=='After') ,]
+#37425
+
 Upstream1_Before.Threshold4<- Upstream1_AllDO[which(Upstream1_AllDO$TimeStamp=='Before' & Upstream1_AllDO$Dissolved.Oxygen <= 4),]
 Upstream1_After.Threshold4<- Upstream1_AllDO[which(Upstream1_AllDO$TimeStamp=='After' & Upstream1_AllDO$Dissolved.Oxygen <= 4),]
 #Before: 192
@@ -103,6 +108,11 @@ Upstream1_After.Threshold6<- Upstream1_AllDO[which(Upstream1_AllDO$TimeStamp=='A
 #After: 7976
 
 
+
+Upstream2_Before.All<- Upstream2_AllDO[which(Upstream2_AllDO$TimeStamp=='Before') ,]
+#47843
+Upstream2_After.All<- Upstream2_AllDO[which(Upstream2_AllDO$TimeStamp=='After') ,]
+#37423
 
 Upstream2_Before.Threshold4<- Upstream2_AllDO[which(Upstream2_AllDO$TimeStamp=='Before' & Upstream2_AllDO$Dissolved.Oxygen <= 4),]
 Upstream2_After.Threshold4<- Upstream2_AllDO[which(Upstream2_AllDO$TimeStamp=='After' & Upstream2_AllDO$Dissolved.Oxygen <= 4),]
@@ -116,6 +126,11 @@ Upstream2_After.Threshold6<- Upstream2_AllDO[which(Upstream2_AllDO$TimeStamp=='A
 
 
 
+Impoundment1_Before.All<- Impoundment1_AllDO[which(Impoundment1_AllDO$TimeStamp=='Before') ,]
+#39001
+Impoundment1_After.All<- Impoundment1_AllDO[which(Impoundment1_AllDO$TimeStamp=='After') ,]
+#36625
+
 Impoundment1_Before.Threshold4<- Impoundment1_AllDO[which(Impoundment1_AllDO$TimeStamp=='Before' & Impoundment1_AllDO$Dissolved.Oxygen <= 4),]
 Impoundment1_After.Threshold4<- Impoundment1_AllDO[which(Impoundment1_AllDO$TimeStamp=='After' & Impoundment1_AllDO$Dissolved.Oxygen <= 4),]
 #Before: 2492
@@ -127,6 +142,11 @@ Impoundment1_After.Threshold6<- Impoundment1_AllDO[which(Impoundment1_AllDO$Time
 #After: 7559
 
 
+
+Downstream1_Before.All<- Downstream1_AllDO[which(Downstream1_AllDO$TimeStamp=='Before') ,]
+#46809
+Downstream1_After.All<- Downstream1_AllDO[which(Downstream1_AllDO$TimeStamp=='After') ,]
+#25215
 
 Downstream1_Before.Threshold4<- Downstream1_AllDO[which(Downstream1_AllDO$TimeStamp=='Before' & Downstream1_AllDO$Dissolved.Oxygen <= 4),]
 Downstream1_After.Threshold4<- Downstream1_AllDO[which(Downstream1_AllDO$TimeStamp=='After' & Downstream1_AllDO$Dissolved.Oxygen <= 4),]
@@ -140,6 +160,11 @@ Downstream1_After.Threshold6<- Downstream1_AllDO[which(Downstream1_AllDO$TimeSta
 
 
 
+Downstream2A_Before.All<- Downstream2A_AllDO[which(Downstream2A_AllDO$TimeStamp=='Before') ,]
+#32519
+Downstream2A_After.All<- Downstream2A_AllDO[which(Downstream2A_AllDO$TimeStamp=='After') ,]
+#33460
+
 Downstream2A_Before.Threshold4<- Downstream2A_AllDO[which(Downstream2A_AllDO$TimeStamp=='Before' & Downstream2A_AllDO$Dissolved.Oxygen <= 4),]
 Downstream2A_After.Threshold4<- Downstream2A_AllDO[which(Downstream2A_AllDO$TimeStamp=='After' & Downstream2A_AllDO$Dissolved.Oxygen <= 4),]
 #Before: 0
@@ -151,6 +176,11 @@ Downstream2A_After.Threshold6<- Downstream2A_AllDO[which(Downstream2A_AllDO$Time
 #After: 11377
 
 
+
+Downstream2B_Before.All<- Downstream2B_AllDO[which(Downstream2B_AllDO$TimeStamp=='Before') ,]
+#50233
+Downstream2B_After.All<- Downstream2B_AllDO[which(Downstream2B_AllDO$TimeStamp=='After') ,]
+#34018
 
 Downstream2B_Before.Threshold4<- Downstream2B_AllDO[which(Downstream2B_AllDO$TimeStamp=='Before' & Downstream2B_AllDO$Dissolved.Oxygen <= 4),]
 Downstream2B_After.Threshold4<- Downstream2B_AllDO[which(Downstream2B_AllDO$TimeStamp=='After' & Downstream2B_AllDO$Dissolved.Oxygen <= 4),]

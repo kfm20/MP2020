@@ -346,3 +346,95 @@ tapply(Downstream2B_AllDO$'Dissolved Oxygen', Downstream2B_AllDO$TimeStamp, summ
 #   0.4467  7.3133  9.5233  9.4048 11.3100 14.6333 
 ```
 
+```{r All DO, site specific scatterplots}
+colnames(Upstream1_AllDO)[4] <- "DO"
+colnames(Upstream2_AllDO)[4]<-"DO"
+colnames(Impoundment1_AllDO)[4] <- "DO"
+colnames(Impoundment1_AllDO)[5] <- "TimeStamp"
+
+colnames(Downstream1_AllDO)[4]<-"DO"
+colnames(Downstream2A_AllDO)[4]<-"DO"
+colnames(Downstream2B_AllDO)[4]<-"DO"
+
+
+d=data.frame(date=as.Date(c("2017-09-21")), event=c("Dam Removal"))
+
+Upstream1_AllDO_Scatterplot <-ggplot(Upstream1_AllDO, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") + ylim(0, 15) +ylab("Dissolved Oxygen (mg/L)")+ xlab("Sampling Date")+
+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
+  labs(title = "Upstream 1")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
+    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+Upstream1_AllDO_Scatterplot
+ggsave("./Outputs/MilburnieDam_Upstream1_AllDO_Scatterplot.jpg", plot=Upstream1_AllDO_Scatterplot, width =10, height=6, units="in", dpi=300)
+
+
+
+Upstream2_AllDO_Scatterplot <-ggplot(Upstream2_AllDO, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") + ylim(0, 15) +ylab("Dissolved Oxygen (mg/L)")+ xlab("Sampling Date")+
+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
+  labs(title = "Upstream 2")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
+    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+Upstream2_AllDO_Scatterplot
+ggsave("./Outputs/MilburnieDam_Upstream2_AllDO_Scatterplot.jpg", plot=Upstream2_AllDO_Scatterplot, width =10, height=6, units="in", dpi=300)
+
+
+Impoundment1_AllDO_Scatterplot <-ggplot(Impoundment1_AllDO, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") +
+ ylim(0, 15) +
+ylab("Dissolved Oxygen (mg/L)")+ xlab("Sampling Date")+
+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
+  labs(title = "Impoundment 1")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
+    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+Impoundment1_AllDO_Scatterplot
+ggsave("./Outputs/MilburnieDam_Impoundment1_AllDO_Scatterplot.jpg", plot=Impoundment1_AllDO_Scatterplot, width =10, height=6, units="in", dpi=300)
+
+Downstream1_AllDO_Scatterplot <-ggplot(Downstream1_AllDO, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") +
+ ylim(0, 15) +
+ylab("Dissolved Oxygen (mg/L)")+ xlab("Sampling Date")+
+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
+  labs(title = "Downstream 1")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
+    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+Downstream1_AllDO_Scatterplot
+ggsave("./Outputs/MilburnieDam_Downstream1_AllDO_Scatterplot.jpg", plot=Downstream1_AllDO_Scatterplot, width =10, height=6, units="in", dpi=300)
+
+Downstream2A_AllDO_Scatterplot <-ggplot(Downstream2A_AllDO, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") +
+ ylim(0, 15) +
+ylab("Dissolved Oxygen (mg/L)")+ xlab("Sampling Date")+
+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
+  labs(title = "Downstream 2A")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
+    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+Downstream2A_AllDO_Scatterplot
+ggsave("./Outputs/MilburnieDam_Downstream2A_AllDO_Scatterplot.jpg", plot=Downstream2A_AllDO_Scatterplot, width =10, height=6, units="in", dpi=300)
+
+
+Downstream2B_AllDO_Scatterplot <-ggplot(Downstream2B_AllDO, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") +
+ ylim(0, 15) +
+ylab("Dissolved Oxygen (mg/L)")+ xlab("Sampling Date")+
+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
+  labs(title = "Downstream 2B")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
+    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+Downstream2B_AllDO_Scatterplot
+ggsave("./Outputs/MilburnieDam_Downstream2B_AllDO_Scatterplot.jpg", plot=Downstream2B_AllDO_Scatterplot, width =10, height=6, units="in", dpi=300)
+```
+

@@ -1,0 +1,194 @@
+---
+title: "DailyMinimum"
+author: "Kathleen Mason"
+date: "1/28/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+library(ggridges)
+library(dplyr)
+
+getwd()
+
+mytheme <- theme_light(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
+
+Upstream1_AllDO<-read_csv("./Processed/MilburnieDam_Upstream1_AllDO_processed.csv")
+Upstream2_AllDO<-read_csv("./Processed/MilburnieDam_Upstream2_AllDO_processed.csv")
+Impoundment1_AllDO<-read_csv("./Processed/MilburnieDam_Impoundment1_AllDO_processed.csv")
+Downstream1_AllDO<-read_csv("./Processed/MilburnieDam_Downstream1_AllDO_processed.csv")
+Downstream2A_AllDO<-read_csv("./Processed/MilburnieDam_Downstream2A_AllDO_processed.csv")
+Downstream2B_AllDO<-read_csv("./Processed/MilburnieDam_Downstream2B_AllDO_processed.csv")
+
+
+#Now take the minimum of each day!
+```
+
+```{r Take the daily minimum}
+
+
+
+
+Upstream1_MinDO<-  
+  Upstream1_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(`Dissolved Oxygen`))
+
+Upstream2_MinDO<-  
+  Upstream2_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(`Dissolved Oxygen`))
+
+Impoundment1_MinDO<-  
+  Impoundment1_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(`Dissolved Oxygen`))
+
+Downstream1_MinDO<-  
+  Downstream1_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(`Dissolved Oxygen`))
+
+Downstream2A_MinDO<-  
+  Downstream2A_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(`Dissolved Oxygen`))
+
+Downstream2B_MinDO<-  
+  Downstream2B_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(`Dissolved Oxygen`))
+
+#Combine all Min's together into one dataset
+#First give them all another column identifying their site location
+Upstream1_MinDO$Location<-"Upstream1"
+Upstream2_MinDO$Location<-"Upstream2"
+Impoundment1_MinDO$Location<-"Impoundment1"
+Downstream1_MinDO$Location<-"Downstream1"
+Downstream2A_MinDO$Location<-"Downstream2A"
+Downstream2B_MinDO$Location<-"Downstream2B"
+#Now Combine into one dataset (later potentially will graph as one dataset)
+All1<-rbind(Upstream1_MinDO, Upstream2_MinDO)
+All2<-rbind(All1, Impoundment1_MinDO)
+All3<-rbind(All2, Downstream1_MinDO)
+All4<-rbind(All3, Downstream2A_MinDO)
+AllMinDO<-rbind(All4, Downstream2B_MinDO)
+#Save this
+
+write.csv(AllMinDO, row.names = FALSE, file =("./Processed/MilburnieDam_UAllMinDO_processed.csv"))
+
+
+#Need the difference between upstream and impoundment- I have one impoundment site but which upstream do I use?
+#I guess I'll try it with both- first I need to combine the impoudment and upstream datasets, probably so the columns of MinDO for Upstream is next to the Impoundment MinDO...then find the difference in a new column
+```
+
+
+```{r Combining Upstream and Impoundment}
+colnames(Upstream1_MinDO)[2] <- "Upstream1_MinDO"
+colnames(Impoundment1_MinDO)[2] <- "Impoundment1_MinDO"
+
+Up1andImp_MinDO<-cbind(Upstream1_MinDO, Impoundment1_MinDO)
+Up1andImp_MinDO <- left_join(Upstream1_MinDO,Impoundment1_MinDO,by="Date")
+
+#Now find difference between the two, but will the NA's affect this?
+
+```
+
+```{r Compute Difference}
+
+
+Up1andImp_MinDO_Diff<-Up1andImp_MinDO%>%
+  mutate(Diff= Upstream1_MinDO-Impoundment1_MinDO)
+
+#Save this dataset
+write.csv(Up1andImp_MinDO_Diff, row.names = FALSE, file =("./Processed/MilburnieDam_Up1andImp_MinDO_Diff_processed.csv"))
+```
+
+```{r Separate all MinDO and Diff data into before and after removal }
+Up1andImp_MinDO_Diff_Before <- Up1andImp_MinDO_Diff %>% filter(Date < as.Date("2017-09-21"))
+
+Up1andImp_MinDO_Diff_After <- Up1andImp_MinDO_Diff %>% filter(Date > as.Date("2017-09-21"))
+
+
+Up1andImp_MinDO_Diff_After$TimeStamp<-"After"
+Up1andImp_MinDO_Diff_Before$TimeStamp<-"Before"
+
+#Save these
+write.csv(Up1andImp_MinDO_Diff_After, row.names = FALSE, file =("./Processed/MilburnieDam_Up1andImp_MinDO_Diff_After_processed.csv"))
+write.csv(Up1andImp_MinDO_Diff_Before, row.names = FALSE, file =("./Processed/MilburnieDam_Up1andImp_MinDO_Diff_Before_processed.csv"))
+
+#AllMinDO
+AllMinDO_Before <- AllMinDO %>% filter(Date < as.Date("2017-09-21"))
+
+AllMinDO_After <- AllMinDO %>% filter(Date > as.Date("2017-09-21"))
+
+
+AllMinDO_After$TimeStamp<-"After"
+AllMinDO_Before$TimeStamp<-"Before"
+
+write.csv(AllMinDO_After, row.names = FALSE, file =("./Processed/MilburnieDam_AllMinDO_After_processed.csv"))
+write.csv(AllMinDO_Before, row.names = FALSE, file =("./Processed/MilburnieDam_AllMinDO_Before_processed.csv"))
+
+```
+
+```{r Graph AllMinDO}
+
+#creating line of dam removal date
+d=data.frame(date=as.Date(c("2017-09-21")), event=c("Dam Removal"))
+
+Before_MinDOplot <-ggplot(AllMinDO_Before, aes(x = Date, y = MinDO)) +
+geom_line(size=.75, color="royalblue4")  + ylim(0, 15) +ylab("Daily Minimum DO (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
+  labs(title = "Avg Minimum DO Before Removal")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
+    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+
+Before_MinDOplot
+ggsave("./Outputs/Before_MinDOplot.jpg", plot=Before_MinDOplot, width =10, height=6, units="in", dpi=300)
+
+
+After_MinDOplot <-ggplot(AllMinDO_After, aes(x = Date, y = MinDO)) +
+geom_line(size=.75, color="royalblue4")  + ylim(0, 15) +ylab("Daily Minimum DO (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
+  labs(title = "Avg Minimum DO After Removal")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
+    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+
+After_MinDOplot
+ggsave("./Outputs/After_MinDOplot.jpg", plot=After_MinDOplot, width =10, height=6, units="in", dpi=300)
+
+```
+
+```{r Graph DODiff}
+MinDODiff_Before_plot <-ggplot(Up1andImp_MinDO_Diff_Before, aes(x = Date, y = Diff)) +
+geom_line(size=.75, color="royalblue4")   +ylab("Daily Minimum DO Difference (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
+  labs(title = "Avg Minimum DO Difference Before Removal")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
+    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+
+MinDODiff_Before_plot
+ggsave("./Outputs/MinDODiff_Before_plot.jpg", plot=MinDODiff_Before_plot, width =10, height=6, units="in", dpi=300)
+
+MinDODiff_After_plot <-ggplot(Up1andImp_MinDO_Diff_After, aes(x = Date, y = Diff)) +
+geom_line(size=.75, color="royalblue4")   +ylab("Daily Minimum DO Difference (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
+  labs(title = "Avg Minimum DO Difference After Removal")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
+    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+
+MinDODiff_After_plot
+ggsave("./Outputs/MinDODiff_After_plot.jpg", plot=MinDODiff_After_plot, width =10, height=6, units="in", dpi=300)
+
+```
+

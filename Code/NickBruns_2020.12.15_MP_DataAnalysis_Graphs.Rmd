@@ -1,0 +1,491 @@
+---
+title: "DO Plots for FWS"
+author: "Nicholas Bruns"
+date: "12/17/2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+theme_set(theme_bw(base_size=16))
+library(lubridate)
+
+```
+```{r}
+study_name <- "NC_Neuse"
+
+site_name_vector <- c("Down1",
+#"Down2a_2019-12-17",
+"Imp1",
+"Imp2",
+"Up1",
+"Up2",
+"down2b")
+
+  
+
+```
+
+```{r pull_and_inspect_1_site}
+#read in all the data
+read_site <- function(site_name) {
+  site_name %>% 
+    paste0("../data/Milburnie/",.,"/",study_name,.,"_sensorData.csv")  %>% 
+    read_csv() %>% 
+    add_column(outer_name=site_name)
+}
+
+all_site_data <- map(site_name_vector,read_site)
+glimpse(all_site_data)
+all_site_tibble <- map_dfr(all_site_data,rbind)
+
+
+```
+```{r}
+#all flagged are removed
+#
+site_position_type <- site_name_vector %>%strsplit(split = "(?<=[a-zA-Z])\\s*(?=[0-9])", perl = TRUE) %>% 
+  map(function(x){x[1]}) %>% unlist() %>% str_to_title()
+
+site_meta_data <- tibble(outer_name=site_name_vector,site_position_type)
+site_meta_data <- site_meta_data %>% add_column(in_figure=c(F,T,F,F,T,T))
+
+#plot for picking which of the sites is representative
+all_site_tibble %>% 
+  filter(variable=="DO_mgL") %>% 
+  filter(is.na(flagtype)) %>% 
+  filter(value>=0) %>% 
+  left_join(site_meta_data) %>% #so we can group by position
+  ggplot() + geom_point(aes(x=date,y=value,col=site),size=.1) + facet_wrap(~site_position_type) +
+  scale_color_viridis_d() + theme_dark()
+  
+#decision?
+  #Down 2b
+  #Imp1
+  #Up2
+all_site_tibble %>% 
+  filter(variable=="DO_mgL") %>% 
+  filter(is.na(flagtype)) %>% 
+  filter(value>=0) %>% 
+  left_join(site_meta_data) %>% #so we can group by position
+  filter(in_figure) %>% 
+    ggplot() + geom_point(aes(x=DateTime_UTC,y=value,col=site),size=.1) +
+  scale_color_viridis_d() + theme_classic()
+  
+```
+
+```{r}
+daily_min_tibble <- all_site_tibble %>% 
+  filter(variable=="DO_mgL") %>% 
+  filter(is.na(flagtype)) %>% 
+  mutate(date=as_date(DateTime_UTC)) %>% 
+  group_by(outer_name,date) %>% 
+  summarise(
+    daily_min_DO=min(value)
+  )
+glimpse(daily_min_tibble)
+
+daily_min_tibble %>% 
+  left_join(site_meta_data) %>% #so we can group by position
+  filter(in_figure) %>% 
+    ggplot() + geom_point(aes(x=date,y=daily_min_DO,col=outer_name)) +
+  scale_color_viridis_d() + theme_classic()
+
+```
+
+```{r}
+string_expander <- tribble(~site_position_type,~full_position_type_name,
+                          "Down","Downstream",
+                          "Up","Upstream",
+                          "Imp","Impounded area")
+
+site_meta_data <- site_meta_data %>% left_join(string_expander)
+
+
+#pre plot
+daily_min_tibble %>% 
+  # filter(DateTime_UTC<"2017-1-1") %>% 
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present (1.6 year record) ","dam removed (1.1 year record)") )%>% 
+  filter(date > "2014-5-1") %>% 
+  filter(date < "2018-9-15") %>% 
+  
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present","dam removed") )%>% #original break point, but that's not correct, as there's fall data pre-removal
+  mutate(dam_status=if_else(date<"2017-12-10","dam present","dam removed") )%>% 
+  filter(!(dam_status=="dam present" & date > "2017-1-1")) %>% #kludgey drop so there's no gap
+  left_join(site_meta_data) %>% #so we can group by position
+  filter(in_figure) %>% 
+  mutate(date=as_date(date)) %>%
+   ggplot() + 
+  geom_point(aes(x=date,y=daily_min_DO,col=full_position_type_name)) +
+  # geom_line(aes(x=date,y=daily_min_DO,col=full_position_type_name)) +
+  facet_wrap(~dam_status,nrow=2,scales="free_x") +
+    scale_x_date(date_labels =  "%b %Y") +
+  
+
+  # scale_color_viridis_d() +  
+  scale_color_brewer(palette = "Dark2") +
+  #style1
+  theme_classic(base_size=16) +
+  #do some access styling, and we're out!
+  xlab("date") +
+  ylab("daily minimum DO concentration (mg/L)") +
+  guides(color = guide_legend(override.aes = list(size=5)),
+         legend.title = element_blank()) +
+  theme(legend.title=element_blank(),
+        legend.position = "bottom")
+
+# calulate duration length!
+dam_dates <- daily_min_tibble %>% 
+  # filter(date<"2017-1-1") %>% 
+  mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present","dam removed") )  %>% 
+  filter(dam_status=="dam present") %>% 
+  pull(DateTime_UTC) 
+
+  max(dam_dates) - min(dam_dates)  
+
+#620
+
+removal_dates <- daily_min_tibble %>% 
+  # filter(DateTime_UTC<"2017-1-1") %>% 
+  filter(DateTime_UTC>"2017-1-1") %>% 
+  pull(DateTime_UTC)  %>% 
+  as_datetime()
+max(removal_dates) - min(removal_dates) 
+#414
+# 1.13 years
+
+
+```
+
+```{r}
+glimpse(daily_min_tibble)
+
+daily_min_tibble_wide <- daily_min_tibble %>% 
+  left_join(site_meta_data) %>% #so we can group by position
+  filter(in_figure) %>%  
+  select(outer_name,date,daily_min_DO) %>% 
+  spread(key=outer_name,value=daily_min_DO) 
+
+daily_min_tibble_wide<- daily_min_tibble_wide %>% mutate(do_change=Imp1-Up2) 
+
+glimpse(daily_min_tibble_wide)  
+summary(daily_min_tibble_wide)
+
+
+
+```
+
+
+
+
+```{r}
+daily_min_tibble_wide %>% 
+  # filter(DateTime_UTC<"2017-1-1") %>% 
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present (1.6 year record) ","dam removed (1.1 year record)") )%>% 
+  filter(date > "2014-5-1") %>% 
+  filter(date < "2018-9-15") %>% 
+  
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present","dam removed") )%>% #original break point, but that's not correct, as there's fall data pre-removal
+  mutate(dam_status=if_else(date<"2017-12-10","dam present","dam removed") )%>% 
+  filter(!(dam_status=="dam present" & date > "2017-1-1")) %>% #kludgey drop so there's no gap
+
+  # filter(!(dam_status=="dam removed" & date < "2017-12-10")) %>% #kludgey drop so there's no gap
+  filter(!is.na(do_change)) %>% 
+  mutate(date=as_date(date)) %>% 
+  mutate(month=month(date)) %>% 
+    # ggplot() + geom_point(aes(x=yday(date),y=do_change)) +
+    ggplot() + 
+  geom_line(aes(x=date,y=do_change)) +
+  facet_wrap(~dam_status,nrow=2) +
+  facet_wrap(~dam_status,nrow=2,scales="free_x") +
+    scale_x_date(date_labels =  "%b %Y") +
+  
+
+  # scale_color_viridis_d() +  
+  scale_color_brewer(palette = "Dark2") +
+  #style1
+  theme_classic(base_size=16) +
+  #do some access styling, and we're out!
+  xlab("date") +
+  ylab("daily minimum DO concentration (mg/L)") +
+  guides(color = guide_legend(override.aes = list(size=5)),
+         legend.title = element_blank()) +
+  theme(legend.title=element_blank(),
+        legend.position = "bottom")
+
+```
+
+
+
+
+
+```{r}
+##here's the plot with day of year--
+daily_min_tibble_wide %>% 
+  # filter(DateTime_UTC<"2017-1-1") %>% 
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present (1.6 year record) ","dam removed (1.1 year record)") )%>% 
+  filter(date > "2014-5-1") %>% 
+  filter(date < "2018-9-15") %>% 
+  
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present","dam removed") )%>% #original break point, but that's not correct, as there's fall data pre-removal
+  mutate(dam_status=if_else(date<"2017-12-10","dam present","dam removed") )%>% 
+  filter(!(dam_status=="dam present" & date > "2017-1-1")) %>% #kludgey drop so there's no gap
+
+  # filter(!(dam_status=="dam removed" & date < "2017-12-10")) %>% #kludgey drop so there's no gap
+
+  mutate(date=as_date(date)) %>% 
+  mutate(month=month(date)) %>% 
+    ggplot() + geom_point(aes(x=yday(date),y=do_change)) +
+  facet_wrap(~dam_status,nrow=2) +
+  facet_wrap(~dam_status,nrow=2,scales="free_x") +
+    # scale_x_date(date_labels =  "%b %Y") +
+  
+
+  # scale_color_viridis_d() +  
+  scale_color_brewer(palette = "Dark2") +
+  #style1
+  theme_classic(base_size=16) +
+  #do some access styling, and we're out!
+  xlab("date") +
+  ylab("daily minimum DO concentration (mg/L)") +
+  guides(color = guide_legend(override.aes = list(size=5)),
+         legend.title = element_blank()) +
+  theme(legend.title=element_blank(),
+        legend.position = "bottom")
+
+```
+
+```{r na_fill_wide_table}
+#fill gaps with NA's
+glimpse(daily_min_tibble_wide)
+raw_dates <- daily_min_tibble_wide$date
+glimpse(raw_dates)
+sum(table(raw_dates))
+full_date_range <- seq(min(raw_dates),max(raw_dates),by="1 day")
+glimpse(full_date_range)
+daily_min_tibble_wide_na_filled <- tibble(date=full_date_range)
+glimpse(daily_min_tibble_wide_na_filled)
+daily_min_tibble_wide_na_filled <- daily_min_tibble_wide_na_filled %>% left_join(daily_min_tibble_wide)
+glimpse(daily_min_tibble_wide_na_filled)
+```
+Brelow looks awesome, should use it in the report.
+
+```{r succesful_line_plot}
+##dixed line plot with the NA's filled in
+daily_min_tibble_wide_na_filled %>% 
+  # filter(DateTime_UTC<"2017-1-1") %>% 
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present (1.6 year record) ","dam removed (1.1 year record)") )%>% 
+  filter(date > "2014-06-03") %>% 
+  filter(date < "2018-9-15") %>% 
+  
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present","dam removed") )%>% #original break point, but that's not correct, as there's fall data pre-removal
+  mutate(dam_status=if_else(date<"2017-12-10","dam present","dam removed") )%>% 
+  filter(!(dam_status=="dam present" & date > "2015-07-02")) %>% #kludgey drop so there's no gap
+
+  # filter(!(dam_status=="dam removed" & date < "2017-12-10")) %>% #kludgey drop so there's no gap
+  # filter(!is.na(do_change)) %>% 
+  mutate(date=as_date(date)) %>% 
+  mutate(month=month(date)) %>% 
+    # ggplot() + geom_point(aes(x=yday(date),y=do_change)) +
+    ggplot() + 
+  geom_line(aes(x=date,y=do_change)) +
+  geom_ribbon(aes(x=date,ymax=0,ymin=do_change),fill="grey") +
+  geom_hline(yintercept = 0,linetype = 2) +
+  facet_wrap(~dam_status,nrow=2) +
+  facet_wrap(~dam_status,nrow=2,scales="free_x") +
+    scale_x_date(date_labels =  "%b %Y") +
+  
+
+  # scale_color_viridis_d() +  
+  scale_color_brewer(palette = "Dark2") +
+  #style1
+  theme_classic(base_size=18) +
+  #do some access styling, and we're out!
+  xlab("date") +
+  ylab("Upstream - impounded area, DO concentration (mg/L)") +
+  guides(color = guide_legend(override.aes = list(size=5)),
+         legend.title = element_blank()) +
+  theme(legend.title=element_blank(),
+        legend.position = "bottom")
+```
+```{r}
+##quick test for that max date
+daily_min_tibble_na_filled %>% 
+  # filter(DateTime_UTC<"2017-1-1") %>% 
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present (1.6 year record) ","dam removed (1.1 year record)") )%>% 
+  filter(date > "2014-5-1") %>% 
+  filter(date < "2018-9-15") %>% 
+  
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present","dam removed") )%>% #original break point, but that's not correct, as there's fall data pre-removal
+  mutate(dam_status=if_else(date<"2017-12-10","dam present","dam removed") )%>% 
+  filter(!(dam_status=="dam present" & date > "2017-1-1")) %>% 
+  filter(dam_status=="dam present") %>% 
+  filter(!is.na(do_change)) %>% 
+  # ggplot() +
+  #   geom_line(aes(x=date,y=do_change))
+  pull(date) %>% min()
+
+### RESULT!!
+#### min: 2014-06-03
+#### max: 2015-07-01
+```
+
+
+
+NA fill the othe long table by pulling back out the NA filled table
+```{r}
+glimpse(daily_min_tibble_wide_na_filled)
+daily_min_tibble_long_na_filled <- daily_min_tibble_wide_na_filled %>% 
+  gather(key=outer_name,value=daily_min_DO,-date) 
+glimpse(daily_min_tibble_long_na_filled )
+
+```
+
+```{r}
+daily_min_tibble_long_na_filled %>%
+# daily_min_tibble %>% 
+  # filter(DateTime_UTC<"2017-1-1") %>% 
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present (1.6 year record) ","dam removed (1.1 year record)") )%>% 
+  filter(date > "2014-06-03") %>% 
+
+  filter(date < "2018-9-15") %>% 
+  
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present","dam removed") )%>% #original break point, but that's not correct, as there's fall data pre-removal
+  mutate(dam_status=if_else(date<"2017-12-10","dam present","dam removed") )%>% 
+  # filter(!(dam_status=="dam present" & date > "2017-1-1")) %>% #kludgey drop so there's no gap
+  filter(!(dam_status=="dam present" & date > "2015-07-02")) %>% #kludgey drop so there's no gap
+
+  left_join(site_meta_data) %>% #so we can group by position
+  filter(in_figure) %>% 
+  mutate(date=as_date(date)) %>%
+   ggplot() + 
+  geom_line(aes(x=date,y=daily_min_DO,col=full_position_type_name)) +
+  # geom_ribbon(data=daily_min_tibble_wide_na_filled, aes(x=date,ymax=Up2,ymin=Imp1)) +
+  # geom_line(aes(x=date,y=daily_min_DO,col=full_position_type_name)) +
+  facet_wrap(~dam_status,nrow=2,scales="free_x") +
+    scale_x_date(date_labels =  "%b %Y") +
+  
+
+  # scale_color_viridis_d() +  
+  scale_color_brewer(palette = "Dark2") +
+  #style1
+  theme_classic(base_size=16) +
+  #do some access styling, and we're out!
+  xlab("date") +
+  ylab("daily minimum DO concentration (mg/L)") +
+  guides(color = guide_legend(override.aes = list(size=5)),
+         legend.title = element_blank()) +
+  theme(legend.title=element_blank(),
+        legend.position = "bottom")
+```
+```{r make_both_plot_data}
+plot_data_long <- daily_min_tibble_long_na_filled %>% 
+    filter(date > "2014-06-03") %>% 
+    filter(date < "2018-9-15") %>% 
+   mutate(dam_status=if_else(date<"2017-12-10","dam present","dam removed") )%>% 
+  # filter(!(dam_status=="dam present" & date > "2017-1-1")) %>% #kludgey drop so there's no gap
+  filter(!(dam_status=="dam present" & date > "2015-07-02")) %>% #kludgey drop so there's no gap
+  left_join(site_meta_data) %>% #so we can group by position
+  filter(in_figure) %>% 
+  mutate(date=as_date(date) )
+  
+glimpse(plot_data_long)
+  
+plot_data_wide <- daily_min_tibble_wide_na_filled %>% 
+  # filter(DateTime_UTC<"2017-1-1") %>% 
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present (1.6 year record) ","dam removed (1.1 year record)") )%>% 
+  filter(date > "2014-06-03") %>% 
+  filter(date < "2018-9-15") %>% 
+  
+  # mutate(dam_status=if_else(DateTime_UTC<"2017-1-1","dam present","dam removed") )%>% #original break point, but that's not correct, as there's fall data pre-removal
+  mutate(dam_status=if_else(date<"2017-12-10","dam present","dam removed") )%>% 
+  filter(!(dam_status=="dam present" & date > "2015-07-02")) %>% #kludgey drop so there's no gap
+
+  # filter(!(dam_status=="dam removed" & date < "2017-12-10")) %>% #kludgey drop so there's no gap
+  # filter(!is.na(do_change)) %>% 
+  mutate(date=as_date(date)) %>% 
+  mutate(month=month(date))
+
+glimpse(plot_data_wide)
+
+```
+
+
+Color in the difference? No good. 
+```{r plot_ribbon_diff}
+ggplot(plot_data_long) + 
+  geom_line(aes(x=date,y=daily_min_DO,col=full_position_type_name)) +
+  geom_ribbon(data=plot_data_wide, aes(x=date,ymax=Up2,ymin=Imp1)) +
+  # geom_line(aes(x=date,y=daily_min_DO,col=full_position_type_name)) +
+  facet_wrap(~dam_status,nrow=2,scales="free_x") +
+    scale_x_date(date_labels =  "%b %Y") +
+  
+
+  # scale_color_viridis_d() +  
+  scale_color_brewer(palette = "Dark2") +
+  #style1
+  theme_classic(base_size=16) +
+  #do some access styling, and we're out!
+  xlab("date") +
+  ylab("daily minimum DO concentration (mg/L)") +
+  guides(color = guide_legend(override.aes = list(size=5)),
+         legend.title = element_blank()) +
+  theme(legend.title=element_blank(),
+        legend.position = "bottom")
+
+```
+
+
+```{r 2_axis_plot_one_below}
+ggplot(plot_data_long) + 
+  geom_line(aes(x=date,y=daily_min_DO,col=full_position_type_name)) +
+  # geom_line(aes(x=date,y=daily_min_DO,col=full_position_type_name)) +
+  facet_wrap(~dam_status,nrow=2,scales="free_x") +
+    scale_x_date(date_labels =  "%b %Y") +
+    geom_line(data=plot_data_wide,aes(x=date,y=do_change)) +
+  geom_ribbon(data=plot_data_wide,aes(x=date,ymax=0,ymin=do_change),fill="grey") +
+  geom_hline(yintercept = 0,linetype = 2) +
+  
+
+  # scale_color_viridis_d() +  
+  scale_color_brewer(palette = "Dark2") +
+  #style1
+  theme_classic(base_size=16) +
+  #do some access styling, and we're out!
+  xlab("date") +
+  ylab("daily minimum DO concentration (mg/L)") +
+  guides(color = guide_legend(override.aes = list(size=5)),
+         legend.title = element_blank()) +
+  theme(legend.title=element_blank(),
+        legend.position = "bottom")
+```
+
+
+```{r 2_axis_plot_one_below}
+linear_shift<- 18
+ggplot(plot_data_long) + 
+  geom_line(aes(x=date,y=daily_min_DO,col=full_position_type_name)) +
+  # geom_line(aes(x=date,y=daily_min_DO,col=full_position_type_name)) +
+  facet_wrap(~dam_status,nrow=2,scales="free_x") +
+    scale_x_date(date_labels =  "%b %Y") +
+    geom_line(data=plot_data_wide,aes(x=date,y=do_change+linear_shift)) +
+  geom_ribbon(data=plot_data_wide,aes(x=date,ymax=linear_shift,ymin=do_change+linear_shift),fill="grey") +
+  geom_hline(yintercept = linear_shift,linetype = 2) +
+  # scale_y_continuous(sec.axis = sec_axis(~ . - linear_shift,name="(impounded area) - (upstream)")) +
+
+  # scale_color_viridis_d() +  
+  scale_color_brewer(palette = "Dark2") +
+  #style1
+  theme_classic(base_size=16) +
+  #do some access styling, and we're out!
+  xlab("date") +
+  ylab("daily minimum DO concentration (mg/L)") +
+  guides(color = guide_legend(override.aes = list(size=5)),
+         legend.title = element_blank()) +
+  theme(legend.title=element_blank(),
+        legend.position = "bottom")
+
+
+```

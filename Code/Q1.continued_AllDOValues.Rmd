@@ -438,3 +438,45 @@ Downstream2B_AllDO_Scatterplot
 ggsave("./Outputs/MilburnieDam_Downstream2B_AllDO_Scatterplot.jpg", plot=Downstream2B_AllDO_Scatterplot, width =10, height=6, units="in", dpi=300)
 ```
 
+```{r Put Multiple plots on 1 Page}
+#library("cowplot")
+
+PLot_all<-plot_grid(Upstream2_AllDO_Scatterplot, Impoundment1_AllDO_Scatterplot, Downstream2B_AllDO_Scatterplot, 
+         #labels = c("Upstream 2", "Impoundment 1", "Downstream 2B" ),
+         ncol = 1, nrow = 3)
+PLot_all
+ggsave("./Outputs/MilburnieDam_AllDO_RepresentativeSites_Combined1.jpg", plot=PLot_all, width =10, height=6, units="in", dpi=300)
+```
+
+```{r}
+#I want to make the graph above more beautiful
+#SEparate each dataset into before and after- will then combine a total of 6 graphs nocol=2, nrow=3 this way there isn't a massive blank space
+#Use these data sets that have already been made... Upstream1_AllValues_After and Upstream1_AllValues_Before
+#Graph each of these for representative sites and then combine
+colnames(Upstream2_AllValues_Before)[4]<-"DO"
+colnames(Upstream2_AllValues_After)[4]<-"DO"
+colnames(Impoundment1_AllValues_Before)[4]<-"DO"
+colnames(Impoundment1_AllValues_After)[4]<-"DO"
+colnames(Downstream2B_AllValues_Before)[4]<-"DO"
+colnames(Downstream2B_AllValues_After)[4]<-"DO"
+
+
+Upstream2_AllDO_Before <-ggplot(Upstream2_AllValues_Before, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") + ylim(0, 15)+
+ylab("Dissolved Oxygen (mg/L)")+ xlab("Sampling Date")+
+  labs(title = "Upstream 2")+
+  scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25))
+Upstream2_AllDO_Before
+
+#Success!!!
+#Now make this for after 
+#then for before and after for the other two sites
+
+
+
+
+```
+

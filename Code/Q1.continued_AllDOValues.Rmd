@@ -463,20 +463,81 @@ colnames(Downstream2B_AllValues_After)[4]<-"DO"
 
 Upstream2_AllDO_Before <-ggplot(Upstream2_AllValues_Before, aes(x = Date, y = DO)) +
 geom_point(size=.25, color="royalblue4") + ylim(0, 15)+
-ylab("Dissolved Oxygen (mg/L)")+ xlab("Sampling Date")+
-  labs(title = "Upstream 2")+
-  scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
+ylab("DO (mg/L)")+ xlab("Sampling Date")+
+  labs(title = "Upstream 2 Before")+
+  scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray85", size = 0.25))
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12))
 Upstream2_AllDO_Before
 
 #Success!!!
 #Now make this for after 
 #then for before and after for the other two sites
 
+Upstream2_AllDO_After <-ggplot(Upstream2_AllValues_After, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") + ylim(0, 15)+ylab("")+
+ xlab("Sampling Date")+
+  labs(title = "Upstream 2 After")+
+  scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2017-09-22','2019-07-10')))+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12))
+Upstream2_AllDO_After
 
 
+
+Impoundment1_AllDO_Before <-ggplot(Impoundment1_AllValues_Before, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") + ylim(0, 15)+
+ylab("DO (mg/L)")+ xlab("Sampling Date")+
+  labs(title = "Impoundment 1 Before")+
+  scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12))
+Impoundment1_AllDO_Before
+
+Impoundment1_AllDO_After <-ggplot(Impoundment1_AllValues_After, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") + ylim(0, 15)+ylab("")+
+ xlab("Sampling Date")+
+  labs(title = "Impoundment 1 After")+
+  scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2017-09-22','2019-07-10')))+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12))
+Impoundment1_AllDO_After
+
+
+Downstream2B_AllDO_Before <-ggplot(Downstream2B_AllValues_Before, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") + ylim(0, 15)+
+ylab("DO (mg/L)")+ xlab("Sampling Date")+
+  labs(title = "Downstream 2B Before")+
+  scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12))
+Downstream2B_AllDO_Before
+
+Downstream2B_AllDO_After <-ggplot(Downstream2B_AllValues_After, aes(x = Date, y = DO)) +
+geom_point(size=.25, color="royalblue4") + ylim(0, 15)+ ylab("")+
+ xlab("Sampling Date")+
+  labs(title = "Downstream 2B After")+
+  scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2017-09-22','2019-07-10')))+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12))
+Downstream2B_AllDO_After
+
+
+```
+
+```{r Combine these}
+
+AllDO_RepresentativeSites_CombinedPlot<-plot_grid(Upstream2_AllDO_Before,Upstream2_AllDO_After, Impoundment1_AllDO_Before, Impoundment1_AllDO_After, Downstream2B_AllDO_Before,Downstream2B_AllDO_After, 
+         #labels = c("Upstream 2", "Impoundment 1", "Downstream 2B" ),
+         ncol = 2, nrow = 3)
+AllDO_RepresentativeSites_CombinedPlot
+ggsave("./Outputs/MilburnieDam_AAllDO_RepresentativeSites_CombinedPlot.jpg", plot=AllDO_RepresentativeSites_CombinedPlot, width =10, height=6, units="in", dpi=300)
 
 ```
 

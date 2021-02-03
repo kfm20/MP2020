@@ -439,7 +439,7 @@ ggsave("./Outputs/MilburnieDam_Downstream2B_AllDO_Scatterplot.jpg", plot=Downstr
 ```
 
 ```{r Put Multiple plots on 1 Page}
-#library("cowplot")
+library("cowplot")
 
 PLot_all<-plot_grid(Upstream2_AllDO_Scatterplot, Impoundment1_AllDO_Scatterplot, Downstream2B_AllDO_Scatterplot, 
          #labels = c("Upstream 2", "Impoundment 1", "Downstream 2B" ),
@@ -538,6 +538,60 @@ AllDO_RepresentativeSites_CombinedPlot<-plot_grid(Upstream2_AllDO_Before,Upstrea
          ncol = 2, nrow = 3)
 AllDO_RepresentativeSites_CombinedPlot
 ggsave("./Outputs/MilburnieDam_AAllDO_RepresentativeSites_CombinedPlot.jpg", plot=AllDO_RepresentativeSites_CombinedPlot, width =10, height=6, units="in", dpi=300)
+
+```
+
+```{r Boxplots of Rep Sites Before and After REmoval}
+colnames(Upstream2_AllDO)[4]<-"DO"
+Upstream2_AllDO_naomit <- Upstream2_AllDO[!(is.na(Upstream2_AllDO$DO)),]
+
+#MilburnieDam_AllDO_Upstream2_boxplot<-ggplot(Upstream2_AllDO_naomit) +
+#geom_boxplot(aes(x = TimeStamp, y = DO), color="skyblue4", alpha=0.75)+
+ # xlab("Timeframe in the Dam \nRemoval Process")+
+ # ylab("DO (mg/L)")+
+#  mytheme+
+#  ggtitle("Upstream Site 2")
+
+MilburnieDam_AllDO_Upstream2_boxplot<-Upstream2_AllDO_naomit%>% ggplot(aes(x=reorder(TimeStamp,-DO, na.rm = TRUE), y=DO)) +
+  geom_boxplot() +labs(y="DO (mg/L)", x="", 
+       subtitle="Upstream 2")
+
+MilburnieDam_AllDO_Upstream2_boxplot
+ggsave("./Outputs/MilburnieDam_AllDO_Upstream2_boxplot.jpg", plot=MilburnieDam_AllDO_Upstream2_boxplot, width =10, height=6, units="in", dpi=300)
+
+colnames(Impoundment1_AllDO)[4]<-"DO"
+Impoundment1_AllDO_naomit <- Impoundment1_AllDO[!(is.na(Impoundment1_AllDO$DO)),]
+
+MilburnieDam_AllDO_Impoundment1_boxplot<-Impoundment1_AllDO_naomit%>% ggplot(aes(x=reorder(TimeStamp,-DO, na.rm = TRUE), y=DO)) +
+  geom_boxplot() +labs(y="DO (mg/L)", x="", 
+       subtitle="Impoundment 1")
+
+MilburnieDam_AllDO_Impoundment1_boxplot
+ggsave("./Outputs/MilburnieDam_AllDO_Impoundment1_boxplot.jpg", plot=MilburnieDam_AllDO_Impoundment1_boxplot, width =10, height=6, units="in", dpi=300)
+
+
+
+colnames(Downstream2B_AllDO)[4]<-"DO"
+Downstream2B_AllDO_naomit <- Downstream2B_AllDO[!(is.na(Downstream2B_AllDO$DO)),]
+
+MilburnieDam_AllDO_Downstream2B_boxplot<-Downstream2B_AllDO_naomit%>% ggplot(aes(x=reorder(TimeStamp,-DO, na.rm = TRUE), y=DO)) +
+  geom_boxplot() +labs(y="DO (mg/L)", x="", 
+       subtitle="Downstream 2B")
+
+MilburnieDam_AllDO_Downstream2B_boxplot
+ggsave("./Outputs/MilburnieDam_AllDO_Downstream2B_boxplot.jpg", plot=MilburnieDam_AllDO_Downstream2B_boxplot, width =10, height=6, units="in", dpi=300)
+
+
+
+
+#Combine all three into one page now!
+
+AllDO_RepresentativeSites_BeforeAfterBoxplots<-plot_grid(MilburnieDam_AllDO_Upstream2_boxplot, MilburnieDam_AllDO_Impoundment1_boxplot, MilburnieDam_AllDO_Downstream2B_boxplot,
+         #labels = c("Upstream 2", "Impoundment 1", "Downstream 2B" ),
+         ncol = 1, nrow = 3)
+AllDO_RepresentativeSites_BeforeAfterBoxplots
+ggsave("./Outputs/AllDO_RepresentativeSites_BeforeAfterBoxplots.jpg", plot=AllDO_RepresentativeSites_BeforeAfterBoxplots, width =6, height=10, units="in", dpi=300)
+
 
 ```
 

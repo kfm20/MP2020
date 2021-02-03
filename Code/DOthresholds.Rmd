@@ -195,3 +195,207 @@ Downstream2B_After.Threshold6<- Downstream2B_AllDO[which(Downstream2B_AllDO$Time
 ```
 
 
+
+##Performing Threshold table before and after removal using DAILY MINIMUM of DO
+
+```{r Take Daily Min of the X_AllDO datasets}
+colnames(Upstream1_AllDO)[4] <- "DO"
+colnames(Upstream2_AllDO)[4]<-"DO"
+colnames(Impoundment1_AllDO)[4] <- "DO"
+colnames(Downstream1_AllDO)[4]<-"DO"
+colnames(Downstream2A_AllDO)[4]<-"DO"
+colnames(Downstream2B_AllDO)[4]<-"DO"
+
+#omit NA's in column of DO
+Upstream1_AllDO<-Upstream1_AllDO[!(is.na(Upstream1_AllDO$DO)),]
+#Take daily min
+Upstream1_MinDO<-  
+  Upstream1_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(DO))
+#Total Min DO= 875
+
+Upstream2_AllDO <- Upstream2_AllDO[!(is.na(Upstream2_AllDO$DO)),]
+Upstream2_MinDO<-  
+  Upstream2_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(DO))
+#Total Min DO= 896
+
+Impoundment1_AllDO <- Impoundment1_AllDO[!(is.na(Impoundment1_AllDO$DO)),]
+Impoundment1_MinDO<-  
+  Impoundment1_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(DO))
+#Total Min DO= 805
+
+Downstream1_AllDO <- Downstream1_AllDO[!(is.na(Downstream1_AllDO$DO)),]
+Downstream1_MinDO<-  
+  Downstream1_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(DO))
+#Total Min DO= 763
+
+Downstream2A_AllDO<- Downstream2A_AllDO[!(is.na(Downstream2A_AllDO$DO)),]
+Downstream2A_MinDO<-  
+  Downstream2A_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(DO))
+#Total Min DO= 702
+
+Downstream2B_AllDO<- Downstream2B_AllDO[!(is.na(Downstream2B_AllDO$DO)),]
+Downstream2B_MinDO<-  
+  Downstream2B_AllDO %>%
+  group_by(Date) %>%
+  summarise(MinDO = min(DO))
+#Total Min DO= 902
+
+```
+
+```{r Divide each data set into before and after}
+#Need to set timestamps now on MinDO datasets
+class(Upstream1_MinDO$Date) #not a date, need to format as date
+Upstream1_MinDO$Date <- as.Date(Upstream1_MinDO$Date, format = "%Y-%m-%d") #Now it is a date
+
+Upstream1_MinDO_Before <- Upstream1_MinDO %>% filter(Date < as.Date("2017-09-21"))
+#484
+Upstream1_MinDO_After <- Upstream1_MinDO %>% filter(Date > as.Date("2017-09-21"))
+#391
+
+#Giving a timestamp- probably don't actually need to do this
+Upstream1_MinDO_Before$TimeStamp<-"Before"
+Upstream1_MinDO_After$TimeStamp<-"After"
+
+
+#Upstream2
+class(Upstream2_MinDO$Date) #not a date, need to format as date
+Upstream2_MinDO$Date <- as.Date(Upstream2_MinDO$Date, format = "%Y-%m-%d") #Now it is a date
+
+Upstream2_MinDO_Before <- Upstream2_MinDO %>% filter(Date < as.Date("2017-09-21"))
+#505
+Upstream2_MinDO_After <- Upstream2_MinDO %>% filter(Date > as.Date("2017-09-21"))
+#391
+
+
+
+#Impoundment1
+class(Impoundment1_MinDO$Date) #not a date, need to format as date
+Impoundment1_MinDO$Date <- as.Date(Impoundment1_MinDO$Date, format = "%Y-%m-%d") #Now it is a date
+
+Impoundment1_MinDO_Before <- Impoundment1_MinDO %>% filter(Date < as.Date("2017-09-21"))
+#421
+Impoundment1_MinDO_After <- Impoundment1_MinDO %>% filter(Date > as.Date("2017-09-21"))
+#384
+
+
+
+#Downstream1
+class(Downstream1_MinDO$Date) #not a date, need to format as date
+Downstream1_MinDO$Date <- as.Date(Downstream1_MinDO$Date, format = "%Y-%m-%d") #Now it is a date
+
+Downstream1_MinDO_Before <- Downstream1_MinDO %>% filter(Date < as.Date("2017-09-21"))
+#496
+Downstream1_MinDO_After <- Downstream1_MinDO %>% filter(Date > as.Date("2017-09-21"))
+#267
+
+
+
+#Downstream2A
+class(Downstream2A_MinDO$Date) #not a date, need to format as date
+Downstream2A_MinDO$Date <- as.Date(Downstream2A_MinDO$Date, format = "%Y-%m-%d") #Now it is a date
+
+Downstream2A_MinDO_Before <- Downstream2A_MinDO %>% filter(Date < as.Date("2017-09-21"))
+#343
+Downstream2A_MinDO_After <- Downstream2A_MinDO %>% filter(Date > as.Date("2017-09-21"))
+#359
+
+
+#Downstream2B
+class(Downstream2B_MinDO$Date) #not a date, need to format as date
+Downstream2B_MinDO$Date <- as.Date(Downstream2B_MinDO$Date, format = "%Y-%m-%d") #Now it is a date
+
+Downstream2B_MinDO_Before <- Downstream2B_MinDO %>% filter(Date < as.Date("2017-09-21"))
+#529
+Downstream2B_MinDO_After <- Downstream2B_MinDO %>% filter(Date > as.Date("2017-09-21"))
+#373
+```
+
+```{r Test the thresholds}
+
+Upstream1_MinDO_Before.Threshold4<- Upstream1_MinDO_Before[which(Upstream1_MinDO_Before$MinDO <= 4),]
+#7
+Upstream1_MinDO_After.Threshold4<- Upstream1_MinDO_After[which(Upstream1_MinDO_After$MinDO <= 4),]
+#66
+
+Upstream1_MinDO_Before.Threshold6<- Upstream1_MinDO_Before[which(Upstream1_MinDO_Before$MinDO <= 6),]
+#82
+Upstream1_MinDO_After.Threshold6<- Upstream1_MinDO_After[which(Upstream1_MinDO_After$MinDO <= 6),]
+#114
+
+
+
+#Upstream2
+Upstream2_MinDO_Before.Threshold4<- Upstream2_MinDO_Before[which(Upstream2_MinDO_Before$MinDO <= 4),]
+#9
+Upstream2_MinDO_After.Threshold4<- Upstream2_MinDO_After[which(Upstream2_MinDO_After$MinDO <= 4),]
+#16
+
+Upstream2_MinDO_Before.Threshold6<- Upstream2_MinDO_Before[which(Upstream2_MinDO_Before$MinDO <= 6),]
+#59
+Upstream2_MinDO_After.Threshold6<- Upstream2_MinDO_After[which(Upstream2_MinDO_After$MinDO <= 6),]
+#113
+
+
+
+#Impoundment1
+Impoundment1_MinDO_Before.Threshold4<- Impoundment1_MinDO_Before[which(Impoundment1_MinDO_Before$MinDO <= 4),]
+#49
+Impoundment1_MinDO_After.Threshold4<- Impoundment1_MinDO_After[which(Impoundment1_MinDO_After$MinDO <= 4),]
+#51
+
+Impoundment1_MinDO_Before.Threshold6<- Impoundment1_MinDO_Before[which(Impoundment1_MinDO_Before$MinDO <= 6),]
+#132
+Impoundment1_MinDO_After.Threshold6<- Impoundment1_MinDO_After[which(Impoundment1_MinDO_After$MinDO <= 6),]
+#133
+
+
+
+
+#Downstream1
+Downstream1_MinDO_Before.Threshold4<- Downstream1_MinDO_Before[which(Downstream1_MinDO_Before$MinDO <= 4),]
+#26
+Downstream1_MinDO_After.Threshold4<- Downstream1_MinDO_After[which(Downstream1_MinDO_After$MinDO <= 4),]
+#35
+
+Downstream1_MinDO_Before.Threshold6<- Downstream1_MinDO_Before[which(Downstream1_MinDO_Before$MinDO <= 6),]
+#41
+Downstream1_MinDO_After.Threshold6<- Downstream1_MinDO_After[which(Downstream1_MinDO_After$MinDO <= 6),]
+#64
+
+
+
+#Downstream2A
+Downstream2A_MinDO_Before.Threshold4<- Downstream2A_MinDO_Before[which(Downstream2A_MinDO_Before$MinDO <= 4),]
+#0
+Downstream2A_MinDO_After.Threshold4<- Downstream2A_MinDO_After[which(Downstream2A_MinDO_After$MinDO <= 4),]
+#66
+
+Downstream2A_MinDO_Before.Threshold6<- Downstream2A_MinDO_Before[which(Downstream2A_MinDO_Before$MinDO <= 6),]
+#35
+Downstream2A_MinDO_After.Threshold6<- Downstream2A_MinDO_After[which(Downstream2A_MinDO_After$MinDO <= 6),]
+#160
+
+
+
+#Downstream2B
+Downstream2B_MinDO_Before.Threshold4<- Downstream2B_MinDO_Before[which(Downstream2B_MinDO_Before$MinDO <= 4),]
+#6
+Downstream2B_MinDO_After.Threshold4<- Downstream2B_MinDO_After[which(Downstream2B_MinDO_After$MinDO <= 4),]
+#69
+
+Downstream2B_MinDO_Before.Threshold6<- Downstream2B_MinDO_Before[which(Downstream2B_MinDO_Before$MinDO <= 6),]
+#65
+Downstream2B_MinDO_After.Threshold6<- Downstream2B_MinDO_After[which(Downstream2B_MinDO_After$MinDO <= 6),]
+#157
+```
+

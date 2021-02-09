@@ -79,9 +79,14 @@ All2<-rbind(All1, Impoundment1_MinDO)
 All3<-rbind(All2, Downstream1_MinDO)
 All4<-rbind(All3, Downstream2A_MinDO)
 AllMinDO<-rbind(All4, Downstream2B_MinDO)
-#Save this
+
+#Combine only representative sites
+Rep1<-rbind(Upstream2_MinDO, Impoundment1_MinDO)
+RepSites_MinDO<-rbind(Rep1, Downstream2B_MinDO)
+#Save these
 
 write.csv(AllMinDO, row.names = FALSE, file =("./Processed/MilburnieDam_UAllMinDO_processed.csv"))
+write.csv(RepSites_MinDO, row.names = FALSE, file =("./Processed/MilburnieDam_RepSites_MinDO_processed.csv"))
 
 
 #Need the difference between upstream and impoundment- I have one impoundment site but which upstream do I use?
@@ -189,6 +194,97 @@ geom_line(size=.75, color="royalblue4")   +ylab("Daily Minimum DO Difference (mg
 
 MinDODiff_After_plot
 ggsave("./Outputs/MinDODiff_After_plot.jpg", plot=MinDODiff_After_plot, width =10, height=6, units="in", dpi=300)
+
+```
+
+#Next Steps:
+#Combine Up2, Imp1, Down2b into one dataset, graph daily min over time --Check, done in chunk 2
+  #Bound date so no major time gaps
+  #Divide into before and after
+#Make difference of up2 and Imp1 dataset
+#Graph this over time
+  #divide into before and after
+  #Rid of major time gaps
+```{r RepSites_MinDO}
+RepSites_MinDO_Before <- RepSites_MinDO %>% filter(Date < as.Date("2017-09-21"))
+
+RepSites_MinDO_After <- RepSites_MinDO %>% filter(Date > as.Date("2017-09-21"))
+
+
+RepSites_MinDO_After$TimeStamp<-"After"
+RepSites_MinDO_Before$TimeStamp<-"Before"
+
+#Let's try graphing
+#Before
+RepSites_MinDO_Before_plot <-ggplot(RepSites_MinDO_Before, aes(x = Date, y = MinDO)) +
+geom_line(size=.75, color="royalblue4")  + ylim(0, 15) +ylab("Daily Minimum DO (mg/L)")+ xlab("Sampling Date")+ scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
+  labs(title = "Before")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), aspect.ratio=4/16) #+   
+    #geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+RepSites_MinDO_Before_plot
+ggsave("./Outputs/RepSites_MinDO_Before_plot.jpg", plot=RepSites_MinDO_Before_plot, width =10, height=6, units="in", dpi=300)
+
+#After
+RepSites_MinDO_After_plot <-ggplot(RepSites_MinDO_After, aes(x = Date, y = MinDO)) +
+geom_line(size=.75, color="royalblue4")  + ylim(0, 15) +ylab("Daily Minimum DO (mg/L)")+ xlab("Sampling Date")+ scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2017-09-22','2019-07-10')))+
+  labs(title = "After")+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), aspect.ratio=4/16) #+   
+    #geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+RepSites_MinDO_After_plot
+ggsave("./Outputs/RepSites_MinDO_After_plot.jpg", plot=RepSites_MinDO_After_plot, width =10, height=6, units="in", dpi=300)
+
+
+#It is still plotting a line where dates are not actually recorded for having any data-- HOW DO I MAKE AN OBVIOUS GAP IN DATA GRAPHED???
+#Used aspect ratio to widen out the data- ultimately alters slopes of lines between sampling dates
+
+```
+
+```{r Attempt 2}
+
+RepSites_MinDO_Before_plot2 <-ggplot(RepSites_MinDO_Before, aes(x = Date, y = MinDO, color=Location)) +
+geom_point(size=.75) + ylim(0, 15)+ ylab("")+
+ xlab("Sampling Date")+
+  labs(title = "Before")+
+  scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12), legend.position = "bottom", legend.title = element_blank(), aspect.ratio=4/16)
+RepSites_MinDO_Before_plot2
+ggsave("./Outputs/MilburnieDam_RepSites_MinDO_Before_plot2.jpg", plot=RepSites_MinDO_Before_plot2, width =10, height=6, units="in", dpi=300)
+
+RepSites_MinDO_After_plot2 <-ggplot(RepSites_MinDO_After, aes(x = Date, y = MinDO, color=Location)) +
+geom_point(size=.75) + ylim(0, 15)+ ylab("")+
+ xlab("Sampling Date")+
+  labs(title = "After")+
+  scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2017-09-22','2019-07-10')))+
+  theme(panel.background = element_rect(fill = "grey97"),
+        panel.grid.major = element_line(color = "gray68", size = 0.5),
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12), legend.position = "bottom", legend.title = element_blank(), aspect.ratio=4/16)
+RepSites_MinDO_After_plot2
+ggsave("./Outputs/MilburnieDam_RepSites_MinDO_After_plot2.jpg", plot=RepSites_MinDO_After_plot2, width =10, height=6, units="in", dpi=300)
+
+
+
+library(cowplot)
+
+#Combine
+MinDO_RepresentativeSites_CombinedPlot<-plot_grid(RepSites_MinDO_Before_plot2,RepSites_MinDO_After_plot2, 
+         #labels = c("Upstream 2", "Impoundment 1", "Downstream 2B" ),
+         ncol = 2, nrow = 1)
+MinDO_RepresentativeSites_CombinedPlot
+ggsave("./Outputs/MilburnieDam_MinDO_RepresentativeSites_CombinedPlot.jpg", plot=MinDO_RepresentativeSites_CombinedPlot, width =10, height=6, units="in", dpi=300)
+
+```
+
+```{r Remake difference graphs}
+#Recalculate difference graphs and then graph and combine with MinDO_RepresentativeSites_CombinedPlot
+#then..Can you manipulate so there is one legend not two??
+
+
 
 ```
 

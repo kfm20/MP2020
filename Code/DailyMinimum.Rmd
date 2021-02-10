@@ -95,11 +95,11 @@ write.csv(RepSites_MinDO, row.names = FALSE, file =("./Processed/MilburnieDam_Re
 
 
 ```{r Combining Upstream and Impoundment}
-colnames(Upstream1_MinDO)[2] <- "Upstream1_MinDO"
+colnames(Upstream2_MinDO)[2] <- "Upstream2_MinDO"
 colnames(Impoundment1_MinDO)[2] <- "Impoundment1_MinDO"
 
-Up1andImp_MinDO<-cbind(Upstream1_MinDO, Impoundment1_MinDO)
-Up1andImp_MinDO <- left_join(Upstream1_MinDO,Impoundment1_MinDO,by="Date")
+Up2andImp_MinDO<-cbind(Upstream2_MinDO, Impoundment1_MinDO)
+Up2andImp_MinDO <- left_join(Upstream2_MinDO,Impoundment1_MinDO,by="Date")
 
 #Now find difference between the two, but will the NA's affect this?
 
@@ -108,25 +108,25 @@ Up1andImp_MinDO <- left_join(Upstream1_MinDO,Impoundment1_MinDO,by="Date")
 ```{r Compute Difference}
 
 
-Up1andImp_MinDO_Diff<-Up1andImp_MinDO%>%
-  mutate(Diff= Upstream1_MinDO-Impoundment1_MinDO)
+Up2andImp1_MinDO_Diff<-Up2andImp_MinDO%>%
+  mutate(Diff= Impoundment1_MinDO-Upstream2_MinDO)
 
 #Save this dataset
-write.csv(Up1andImp_MinDO_Diff, row.names = FALSE, file =("./Processed/MilburnieDam_Up1andImp_MinDO_Diff_processed.csv"))
+write.csv(Up2andImp1_MinDO_Diff, row.names = FALSE, file =("./Processed/MilburnieDam_Up2andImp1_MinDO_Diff_processed.csv"))
 ```
 
 ```{r Separate all MinDO and Diff data into before and after removal }
-Up1andImp_MinDO_Diff_Before <- Up1andImp_MinDO_Diff %>% filter(Date < as.Date("2017-09-21"))
+Up2andImp1_MinDO_Diff_Before <- Up2andImp1_MinDO_Diff %>% filter(Date < as.Date("2017-09-21"))
 
-Up1andImp_MinDO_Diff_After <- Up1andImp_MinDO_Diff %>% filter(Date > as.Date("2017-09-21"))
+Up2andImp1_MinDO_Diff_After <- Up2andImp1_MinDO_Diff %>% filter(Date > as.Date("2017-09-21"))
 
 
-Up1andImp_MinDO_Diff_After$TimeStamp<-"After"
-Up1andImp_MinDO_Diff_Before$TimeStamp<-"Before"
+Up2andImp1_MinDO_Diff_After$TimeStamp<-"After"
+Up2andImp1_MinDO_Diff_Before$TimeStamp<-"Before"
 
 #Save these
-write.csv(Up1andImp_MinDO_Diff_After, row.names = FALSE, file =("./Processed/MilburnieDam_Up1andImp_MinDO_Diff_After_processed.csv"))
-write.csv(Up1andImp_MinDO_Diff_Before, row.names = FALSE, file =("./Processed/MilburnieDam_Up1andImp_MinDO_Diff_Before_processed.csv"))
+write.csv(Up2andImp1_MinDO_Diff_After, row.names = FALSE, file =("./Processed/MilburnieDam_Up2andImp1_MinDO_Diff_After_processed.csv"))
+write.csv(Up2andImp1_MinDO_Diff_Before, row.names = FALSE, file =("./Processed/MilburnieDam_Up2andImp1_MinDO_Diff_Before_processed.csv"))
 
 #AllMinDO
 AllMinDO_Before <- AllMinDO %>% filter(Date < as.Date("2017-09-21"))
@@ -173,27 +173,35 @@ ggsave("./Outputs/After_MinDOplot.jpg", plot=After_MinDOplot, width =10, height=
 ```
 
 ```{r Graph DODiff}
-MinDODiff_Before_plot <-ggplot(Up1andImp_MinDO_Diff_Before, aes(x = Date, y = Diff)) +
-geom_line(size=.75, color="royalblue4")   +ylab("Daily Minimum DO Difference (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
-  labs(title = "Avg Minimum DO Difference Before Removal")+
+MinDODiff_Before_plot <-ggplot(Up2andImp1_MinDO_Diff_Before, aes(x = Date, y = Diff)) +
+geom_line(size=.75, color="royalblue4")   +ylab("")+ xlab("Sampling Date")+scale_x_date(date_breaks = "3 month", date_minor_breaks= "months", date_labels = "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
+  labs(title = "Before")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
-    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), aspect.ratio = 5/30, plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12))
+#+   
+   # geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
 
 MinDODiff_Before_plot
 ggsave("./Outputs/MinDODiff_Before_plot.jpg", plot=MinDODiff_Before_plot, width =10, height=6, units="in", dpi=300)
 
-MinDODiff_After_plot <-ggplot(Up1andImp_MinDO_Diff_After, aes(x = Date, y = Diff)) +
-geom_line(size=.75, color="royalblue4")   +ylab("Daily Minimum DO Difference (mg/L)")+ xlab("Sampling Date")+scale_x_date(date_breaks = "1 year", date_minor_breaks= "months", date_labels = "%m/%y")+
-  labs(title = "Avg Minimum DO Difference After Removal")+
+MinDODiff_After_plot <-ggplot(Up2andImp1_MinDO_Diff_After, aes(x = Date, y = Diff)) +
+geom_line(size=.75, color="royalblue4")   +ylab("")+ xlab("Sampling Date")+scale_x_date(date_breaks = "3 month", date_minor_breaks= "months", date_labels = "%m/%y", limits = as.Date(c('2017-09-22','2019-07-10')))+
+  labs(title = "After")+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray85", size = 0.25))+   
-    geom_vline(data=d, mapping=aes(xintercept=date), color="red", lty=5, size=.5)
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), aspect.ratio = 5/30, plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12))
 
 MinDODiff_After_plot
 ggsave("./Outputs/MinDODiff_After_plot.jpg", plot=MinDODiff_After_plot, width =10, height=6, units="in", dpi=300)
+
+#Combine
+MinDO_Diff_RepresentativeSites_CombinedPlot<-plot_grid(MinDODiff_Before_plot,MinDODiff_After_plot, 
+         #labels = c("Upstream 2", "Impoundment 1", "Downstream 2B" ),
+         ncol = 2, nrow = 1)
+MinDO_Diff_RepresentativeSites_CombinedPlot
+ggsave("./Outputs/MilburnieDam_MinDO_Diff_RepresentativeSites_CombinedPlot.jpg", plot=MinDO_Diff_RepresentativeSites_CombinedPlot, width =10, height=6, units="in", dpi=300)
+
 
 ```
 
@@ -247,42 +255,51 @@ ggsave("./Outputs/RepSites_MinDO_After_plot.jpg", plot=RepSites_MinDO_After_plot
 
 RepSites_MinDO_Before_plot2 <-ggplot(RepSites_MinDO_Before, aes(x = Date, y = MinDO, color=Location)) +
 geom_point(size=.75) + ylim(0, 15)+ ylab("")+
- xlab("Sampling Date")+
+ xlab("")+
   labs(title = "Before")+
   scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12), legend.position = "bottom", legend.title = element_blank(), aspect.ratio=4/16)
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12), legend.position = "bottom", legend.title = element_blank(), aspect.ratio=5/30, legend.text=element_text(size=10))
 RepSites_MinDO_Before_plot2
 ggsave("./Outputs/MilburnieDam_RepSites_MinDO_Before_plot2.jpg", plot=RepSites_MinDO_Before_plot2, width =10, height=6, units="in", dpi=300)
 
 RepSites_MinDO_After_plot2 <-ggplot(RepSites_MinDO_After, aes(x = Date, y = MinDO, color=Location)) +
 geom_point(size=.75) + ylim(0, 15)+ ylab("")+
- xlab("Sampling Date")+
+ xlab("")+
   labs(title = "After")+
   scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2017-09-22','2019-07-10')))+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
-        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12), legend.position = "bottom", legend.title = element_blank(), aspect.ratio=4/16)
+        panel.grid.minor = element_line(color = "gray85", size = 0.25), plot.title = element_text(size = 10), axis.title.y = element_text(size = 12), axis.title.x = element_text(size = 12), aspect.ratio=5/30)
 RepSites_MinDO_After_plot2
 ggsave("./Outputs/MilburnieDam_RepSites_MinDO_After_plot2.jpg", plot=RepSites_MinDO_After_plot2, width =10, height=6, units="in", dpi=300)
 
 
-
+#install.packages("gridGraphics")
+library(gridGraphics)
 library(cowplot)
-
+legend_MinDO<-get_legend(RepSites_MinDO_After_plot2+ theme(legend.position = "bottom", legend.direction = "horizontal", legend.title = element_blank(), legend.text = element_text( size = 10)))
+legend_MinDO
 #Combine
-MinDO_RepresentativeSites_CombinedPlot<-plot_grid(RepSites_MinDO_Before_plot2,RepSites_MinDO_After_plot2, 
+MinDO_RepresentativeSites_CombinedPlot<-plot_grid(RepSites_MinDO_Before_plot2+theme(legend.position="none"),RepSites_MinDO_After_plot2+ theme(legend.position="none"), 
          #labels = c("Upstream 2", "Impoundment 1", "Downstream 2B" ),
          ncol = 2, nrow = 1)
 MinDO_RepresentativeSites_CombinedPlot
 ggsave("./Outputs/MilburnieDam_MinDO_RepresentativeSites_CombinedPlot.jpg", plot=MinDO_RepresentativeSites_CombinedPlot, width =10, height=6, units="in", dpi=300)
 
+Final_MinDO_Combined<-plot_grid(MinDO_RepresentativeSites_CombinedPlot, legend_MinDO, ncol=1)
+Final_MinDO_Combined
 ```
 
-```{r Remake difference graphs}
-#Recalculate difference graphs and then graph and combine with MinDO_RepresentativeSites_CombinedPlot
-#then..Can you manipulate so there is one legend not two??
+```{r Final combining}
+#combine min Diff graph of before and after with minDO rep sites before and after
+
+Final_MinDO_DiffDO<-plot_grid(MinDO_Diff_RepresentativeSites_CombinedPlot,Final_MinDO_Combined, 
+         labels = c("A", "B" ),
+         ncol = 1, nrow = 2)
+Final_MinDO_DiffDO
+ggsave("./Outputs/MilburnieDam_Final_MinDO_DiffDO.jpg", plot=Final_MinDO_DiffDO, width =10, height=6, units="in", dpi=300)
 
 
 

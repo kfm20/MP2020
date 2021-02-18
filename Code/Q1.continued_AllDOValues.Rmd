@@ -463,7 +463,7 @@ colnames(Downstream2B_AllValues_After)[4]<-"DO"
 
 Upstream2_AllDO_Before <-ggplot(Upstream2_AllValues_Before, aes(x = Date, y = DO)) +
 geom_point(size=.25, color="royalblue4") + ylim(0, 15)+
-ylab("DO (mg/L)")+ xlab("Sampling Date")+
+ylab("")+ xlab("")+
   labs(title = "Upstream 2 Before")+
   scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
   theme(panel.background = element_rect(fill = "grey97"),
@@ -477,8 +477,8 @@ Upstream2_AllDO_Before
 
 Upstream2_AllDO_After <-ggplot(Upstream2_AllValues_After, aes(x = Date, y = DO)) +
 geom_point(size=.25, color="royalblue4") + ylim(0, 15)+ylab("")+
- xlab("Sampling Date")+
-  labs(title = "Upstream 2 After")+
+ xlab("")+
+  labs(title = "After")+
   scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2017-09-22','2019-07-10')))+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
@@ -489,7 +489,7 @@ Upstream2_AllDO_After
 
 Impoundment1_AllDO_Before <-ggplot(Impoundment1_AllValues_Before, aes(x = Date, y = DO)) +
 geom_point(size=.25, color="royalblue4") + ylim(0, 15)+
-ylab("DO (mg/L)")+ xlab("Sampling Date")+
+ylab("")+ xlab("")+
   labs(title = "Impoundment 1 Before")+
   scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
   theme(panel.background = element_rect(fill = "grey97"),
@@ -499,8 +499,8 @@ Impoundment1_AllDO_Before
 
 Impoundment1_AllDO_After <-ggplot(Impoundment1_AllValues_After, aes(x = Date, y = DO)) +
 geom_point(size=.25, color="royalblue4") + ylim(0, 15)+ylab("")+
- xlab("Sampling Date")+
-  labs(title = "Impoundment 1 After")+
+ xlab("")+
+  labs(title = "After")+
   scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2017-09-22','2019-07-10')))+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
@@ -510,7 +510,7 @@ Impoundment1_AllDO_After
 
 Downstream2B_AllDO_Before <-ggplot(Downstream2B_AllValues_Before, aes(x = Date, y = DO)) +
 geom_point(size=.25, color="royalblue4") + ylim(0, 15)+
-ylab("DO (mg/L)")+ xlab("Sampling Date")+
+ylab("")+ xlab("")+
   labs(title = "Downstream 2B Before")+
   scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2013-10-11','2015-07-01')))+
   theme(panel.background = element_rect(fill = "grey97"),
@@ -520,8 +520,8 @@ Downstream2B_AllDO_Before
 
 Downstream2B_AllDO_After <-ggplot(Downstream2B_AllValues_After, aes(x = Date, y = DO)) +
 geom_point(size=.25, color="royalblue4") + ylim(0, 15)+ ylab("")+
- xlab("Sampling Date")+
-  labs(title = "Downstream 2B After")+
+ xlab("")+
+  labs(title = "After")+
   scale_x_date(date_breaks = "3 months", date_minor_breaks= "months", date_labels= "%m/%y", limits = as.Date(c('2017-09-22','2019-07-10')))+
   theme(panel.background = element_rect(fill = "grey97"),
         panel.grid.major = element_line(color = "gray68", size = 0.5),
@@ -532,12 +532,27 @@ Downstream2B_AllDO_After
 ```
 
 ```{r Combine these}
+library(grid)
+library(gridExtra)
+
+y.grob <- textGrob("DO (mg/L)", 
+                   gp=gpar(fontsize=14), rot=90)
+x.grob <- textGrob("Sampling Date", 
+                   gp=gpar( fontsize=14))
+
+
+
 
 AllDO_RepresentativeSites_CombinedPlot<-plot_grid(Upstream2_AllDO_Before,Upstream2_AllDO_After, Impoundment1_AllDO_Before, Impoundment1_AllDO_After, Downstream2B_AllDO_Before,Downstream2B_AllDO_After, 
          #labels = c("Upstream 2", "Impoundment 1", "Downstream 2B" ),
          ncol = 2, nrow = 3)
-AllDO_RepresentativeSites_CombinedPlot
-ggsave("./Outputs/MilburnieDam_AAllDO_RepresentativeSites_CombinedPlot.jpg", plot=AllDO_RepresentativeSites_CombinedPlot, width =10, height=6, units="in", dpi=300)
+
+
+AllDO_RepresentativeSites_CombinedPlot2<-grid.arrange(arrangeGrob(AllDO_RepresentativeSites_CombinedPlot, left = y.grob, bottom=x.grob))
+
+AllDO_RepresentativeSites_CombinedPlot2
+
+ggsave("./Outputs/MilburnieDam_AAllDO_RepresentativeSites_CombinedPlot2.jpg", plot=AllDO_RepresentativeSites_CombinedPlot2, width =12, height=6, units="in", dpi=300)
 
 ```
 
@@ -553,8 +568,7 @@ Upstream2_AllDO_naomit <- Upstream2_AllDO[!(is.na(Upstream2_AllDO$DO)),]
 #  ggtitle("Upstream Site 2")
 
 MilburnieDam_AllDO_Upstream2_boxplot<-Upstream2_AllDO_naomit%>% ggplot(aes(x=reorder(TimeStamp,-DO, na.rm = TRUE), y=DO)) +
-  geom_boxplot() +labs(y="DO (mg/L)", x="", 
-       subtitle="Upstream 2")
+  geom_boxplot() +labs(y="", x="", subtitle = "Upstream 2")
 
 MilburnieDam_AllDO_Upstream2_boxplot
 ggsave("./Outputs/MilburnieDam_AllDO_Upstream2_boxplot.jpg", plot=MilburnieDam_AllDO_Upstream2_boxplot, width =10, height=6, units="in", dpi=300)
@@ -563,7 +577,7 @@ colnames(Impoundment1_AllDO)[4]<-"DO"
 Impoundment1_AllDO_naomit <- Impoundment1_AllDO[!(is.na(Impoundment1_AllDO$DO)),]
 
 MilburnieDam_AllDO_Impoundment1_boxplot<-Impoundment1_AllDO_naomit%>% ggplot(aes(x=reorder(TimeStamp,-DO, na.rm = TRUE), y=DO)) +
-  geom_boxplot() +labs(y="DO (mg/L)", x="", 
+  geom_boxplot() +labs(y="", x="", 
        subtitle="Impoundment 1")
 
 MilburnieDam_AllDO_Impoundment1_boxplot
@@ -575,7 +589,7 @@ colnames(Downstream2B_AllDO)[4]<-"DO"
 Downstream2B_AllDO_naomit <- Downstream2B_AllDO[!(is.na(Downstream2B_AllDO$DO)),]
 
 MilburnieDam_AllDO_Downstream2B_boxplot<-Downstream2B_AllDO_naomit%>% ggplot(aes(x=reorder(TimeStamp,-DO, na.rm = TRUE), y=DO)) +
-  geom_boxplot() +labs(y="DO (mg/L)", x="", 
+  geom_boxplot() +labs(y="", x="", 
        subtitle="Downstream 2B")
 
 MilburnieDam_AllDO_Downstream2B_boxplot
@@ -586,11 +600,18 @@ ggsave("./Outputs/MilburnieDam_AllDO_Downstream2B_boxplot.jpg", plot=MilburnieDa
 
 #Combine all three into one page now!
 
+
+y.grob <- textGrob("DO (mg/L)", 
+                   gp=gpar(fontsize=14), rot=90)
+
 AllDO_RepresentativeSites_BeforeAfterBoxplots<-plot_grid(MilburnieDam_AllDO_Upstream2_boxplot, MilburnieDam_AllDO_Impoundment1_boxplot, MilburnieDam_AllDO_Downstream2B_boxplot,
          #labels = c("Upstream 2", "Impoundment 1", "Downstream 2B" ),
          ncol = 1, nrow = 3)
 AllDO_RepresentativeSites_BeforeAfterBoxplots
-ggsave("./Outputs/AllDO_RepresentativeSites_BeforeAfterBoxplots.jpg", plot=AllDO_RepresentativeSites_BeforeAfterBoxplots, width =6, height=10, units="in", dpi=300)
+
+AllDO_RepresentativeSites_BeforeAfterBoxplots2<-grid.arrange(arrangeGrob(AllDO_RepresentativeSites_BeforeAfterBoxplots, left = y.grob))
+
+ggsave("./Outputs/AllDO_RepresentativeSites_BeforeAfterBoxplots2.jpg", plot=AllDO_RepresentativeSites_BeforeAfterBoxplots2, width =6, height=10, units="in", dpi=300)
 
 
 ```
